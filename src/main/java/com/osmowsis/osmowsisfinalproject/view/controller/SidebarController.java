@@ -14,7 +14,6 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Side;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
@@ -29,7 +28,6 @@ import org.springframework.stereotype.Controller;
 
 import java.net.URL;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -208,6 +206,9 @@ public class SidebarController implements Initializable
         simDetailsActiveMowerCountLabel.textProperty().bind(simulationDataModel.getActiveMowerCount().asString());
         simDetailsTotalGrassCutLabel.textProperty().bind(simulationDataModel.getTotalGrassCut().asString());
 
+        // CLEAR THE CONSOLE
+        printConsoleMessage("", true);
+
         simulationDataModel.incrementCurrentTurn();
 
         lawnGridController.updateLawnUI();
@@ -280,6 +281,22 @@ public class SidebarController implements Initializable
         for(Map.Entry<Gopher, SidebarGopherCellController> entry : gopherControllerMap.entrySet())
         {
             entry.getValue().setCellInfo(entry.getKey());
+        }
+    }
+
+    /**
+     * Prints a message to the console
+     *
+     * @param textToPrint - The message to print to the console
+     */
+    public void printConsoleMessage(final String textToPrint, boolean deletePreviousMessage)
+    {
+        if(deletePreviousMessage)
+        {
+            consoleTextArea.setText(textToPrint.trim());
+        }
+        else{
+            consoleTextArea.setText(consoleTextArea.getText() + "\n\n" + textToPrint);
         }
     }
 

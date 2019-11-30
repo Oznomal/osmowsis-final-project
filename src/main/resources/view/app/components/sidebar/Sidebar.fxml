@@ -382,7 +382,7 @@
                 <!-- _________-->
                 <HBox prefHeight="75.0" prefWidth="290.0" styleClass="details-area">
                     <TextArea fx:id="consoleTextArea" editable="false" focusTraversable="false" maxHeight="75.0"
-                              prefWidth="290.0">
+                              prefWidth="290.0" wrapText="true">
                         <VBox.margin>
                             <Insets left="5.0" right="5.0"/>
                         </VBox.margin>

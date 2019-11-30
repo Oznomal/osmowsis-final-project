@@ -27,12 +27,13 @@ public class SimulationService {
     // CONSTRUCTOR
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Autowired
+    @Lazy
     public SimulationService(final SimulationDataModel simulationDataModel,
                              final SimulationRiskProfileService simulationRiskProfileService,
                              final GopherService gopherService,
                              final MowerService mowerService,
                              final LawnGridController lawnGridController,
-                             @Lazy final SidebarController sidebarController)
+                             final SidebarController sidebarController)
     {
         this.simulationDataModel = simulationDataModel;
         this.simulationRiskProfileService = simulationRiskProfileService;

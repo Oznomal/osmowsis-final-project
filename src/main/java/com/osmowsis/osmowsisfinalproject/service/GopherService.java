@@ -34,6 +34,26 @@ public class GopherService
 
     // PUBLIC METHODS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * Gets a gopher based on the lawn coordinates throws an exception if the gopher is not located
+     *
+     * @param x - The x coordinate
+     * @param y - The y coordinate
+     *
+     * @return - The gopher that is located at the coordinates
+     */
+    public Gopher getGopherByCoordinates(final int x, final int y)
+    {
+        for(Gopher gopher : simulationDataModel.getGophers())
+        {
+            if(gopher.getXCoordinate() == x && gopher.getYCoordinate() == y)
+            {
+                return gopher;
+            }
+        }
+
+        throw new RuntimeException("[INVALID GOPHER] :: getGopherByCoordinates - No gopher at coordinates");
+    }
 
 //    public void updateSimStateGopher(Move move) {
 //        LawnSquare newSquare = lawnService.getLawnSquareByCoordinates(move.getNewXCoordinate(), move.getNewYCoordinate());
