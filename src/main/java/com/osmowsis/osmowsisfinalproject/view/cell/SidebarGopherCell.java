@@ -1,8 +1,10 @@
 package com.osmowsis.osmowsisfinalproject.view.cell;
 
 import com.osmowsis.osmowsisfinalproject.pojo.Gopher;
+import com.osmowsis.osmowsisfinalproject.view.controller.SidebarController;
 import com.osmowsis.osmowsisfinalproject.view.controller.SidebarGopherCellController;
 import javafx.scene.control.ListCell;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -23,7 +25,17 @@ public class SidebarGopherCell extends ListCell<Gopher>
 {
     // FIELDS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private final SidebarController sidebarController;
+
     private SidebarGopherCellController sidebarGopherCellController;
+
+    // CONSTRUCTORS
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Autowired
+    public SidebarGopherCell(final SidebarController sidebarController)
+    {
+        this.sidebarController = sidebarController;
+    }
 
     // PROTECTED METHODS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,6 +50,8 @@ public class SidebarGopherCell extends ListCell<Gopher>
                     || sidebarGopherCellController.getGopher() != item)
             {
                 sidebarGopherCellController = getSidebarGopherCellController();
+
+                sidebarController.getGopherControllerMap().put(item, sidebarGopherCellController);
             }
 
             sidebarGopherCellController.setCellInfo(item);

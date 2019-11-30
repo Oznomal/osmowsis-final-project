@@ -14,6 +14,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
@@ -272,6 +273,11 @@ public class SidebarController implements Initializable
     public void updateSidebarUI()
     {
         for(Map.Entry<Mower, SidebarMowerCellController> entry : mowerControllerMap.entrySet())
+        {
+            entry.getValue().setCellInfo(entry.getKey());
+        }
+
+        for(Map.Entry<Gopher, SidebarGopherCellController> entry : gopherControllerMap.entrySet())
         {
             entry.getValue().setCellInfo(entry.getKey());
         }
