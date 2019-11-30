@@ -157,7 +157,8 @@ public class SidebarMowerCellController
             smartIcon.getStyleClass().remove(CSS.SMART_ICON_DISABLED);
             smartIcon.getStyleClass().add(CSS.SMART_ICON_ACTIVE);
         }
-        else{
+        else if(!mower.isStrategic() && !smartIcon.getStyleClass().contains(CSS.SMART_ICON_DISABLED))
+        {
             smartIcon.getStyleClass().remove(CSS.SMART_ICON_ACTIVE);
             smartIcon.getStyleClass().add(CSS.SMART_ICON_DISABLED);
         }
@@ -233,6 +234,15 @@ public class SidebarMowerCellController
      */
     private void updatePositionInfo(final Mower mower)
     {
-        mowerPositionLabel.setText(mower.getCurrentXCoordinate() + ", " + mower.getCurrentYCoordinate());
+        final int x = mower.getCurrentXCoordinate();
+        final int y = mower.getCurrentYCoordinate();
+
+        if(x == Integer.MIN_VALUE && y == Integer.MIN_VALUE)
+        {
+            mowerPositionLabel.setText("N/A");
+        }
+        else{
+            mowerPositionLabel.setText(mower.getCurrentXCoordinate() + ", " + mower.getCurrentYCoordinate());
+        }
     }
 }

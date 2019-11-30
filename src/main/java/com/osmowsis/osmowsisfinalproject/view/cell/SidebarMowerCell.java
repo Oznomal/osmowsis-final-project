@@ -1,9 +1,12 @@
 package com.osmowsis.osmowsisfinalproject.view.cell;
 
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
+import com.osmowsis.osmowsisfinalproject.view.controller.SidebarController;
 import com.osmowsis.osmowsisfinalproject.view.controller.SidebarMowerCellController;
 import javafx.scene.control.ListCell;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +26,17 @@ public class SidebarMowerCell extends ListCell<Mower>
 {
     // FIELDS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private final SidebarController sidebarController;
+
     private SidebarMowerCellController sidebarMowerCellController;
+
+    // FIELDS
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Autowired
+    public SidebarMowerCell(final SidebarController sidebarController)
+    {
+        this.sidebarController = sidebarController;
+    }
 
     // PROTECTED METHODS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,6 +51,8 @@ public class SidebarMowerCell extends ListCell<Mower>
                     || sidebarMowerCellController.getMower() != item)
             {
                 sidebarMowerCellController = getSidebarMowerCellController();
+
+                sidebarController.getMowerControllerMap().put(item, sidebarMowerCellController);
             }
 
             sidebarMowerCellController.setCellInfo(item);

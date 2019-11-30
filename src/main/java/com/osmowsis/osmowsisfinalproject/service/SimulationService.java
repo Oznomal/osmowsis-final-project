@@ -3,9 +3,11 @@ package com.osmowsis.osmowsisfinalproject.service;
 import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
 import com.osmowsis.osmowsisfinalproject.view.controller.LawnGridController;
+import com.osmowsis.osmowsisfinalproject.view.controller.SidebarController;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 
@@ -20,6 +22,7 @@ public class SimulationService {
     private final GopherService gopherService;
     private final MowerService mowerService;
     private final LawnGridController lawnGridController;
+    private final SidebarController sidebarController;
 
     // CONSTRUCTOR
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,13 +31,15 @@ public class SimulationService {
                              final SimulationRiskProfileService simulationRiskProfileService,
                              final GopherService gopherService,
                              final MowerService mowerService,
-                             final LawnGridController lawnGridController)
+                             final LawnGridController lawnGridController,
+                             @Lazy final SidebarController sidebarController)
     {
         this.simulationDataModel = simulationDataModel;
         this.simulationRiskProfileService = simulationRiskProfileService;
         this.gopherService = gopherService;
         this.mowerService = mowerService;
         this.lawnGridController = lawnGridController;
+        this.sidebarController = sidebarController;
     }
 
     // PUBLIC METHODS
@@ -77,6 +82,8 @@ public class SimulationService {
         }
 
         Platform.runLater(() -> lawnGridController.updateLawnUI());
+
+        Platform.runLater(() -> sidebarController.updateSidebarUI());
 
         if(isSimulationDone())
         {

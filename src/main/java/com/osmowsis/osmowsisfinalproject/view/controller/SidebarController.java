@@ -19,6 +19,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -26,6 +27,9 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -96,6 +100,12 @@ public class SidebarController implements Initializable
     @FXML
     private TextArea consoleTextArea;
 
+    @Getter
+    private Map<Mower, SidebarMowerCellController> mowerControllerMap;
+
+    @Getter
+    private Map<Gopher, SidebarGopherCellController> gopherControllerMap;
+
     // CONSTRUCTORS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Autowired
@@ -108,6 +118,9 @@ public class SidebarController implements Initializable
         this.lawnGridController = lawnGridController;
         this.stageManager = stageManager;
         this.simulationService = simulationService;
+
+        mowerControllerMap = new HashMap<>();
+        gopherControllerMap = new HashMap<>();
     }
 
     // INIT METHODS
@@ -251,6 +264,17 @@ public class SidebarController implements Initializable
         stageManager.closeMainStage();
 
         System.exit(0);
+    }
+
+    /**
+     * Updates the sidebar UI based on the information that is in the model
+     */
+    public void updateSidebarUI()
+    {
+        for(Map.Entry<Mower, SidebarMowerCellController> entry : mowerControllerMap.entrySet())
+        {
+            entry.getValue().setCellInfo(entry.getKey());
+        }
     }
 
     // PRIVATE METHODS
