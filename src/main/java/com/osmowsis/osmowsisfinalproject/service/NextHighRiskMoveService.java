@@ -89,7 +89,7 @@ class NextHighRiskMoveService extends NextMowerMoveService
         final int currXCoor = mower.getCurrentXCoordinate();
         final int currYCoor = mower.getCurrentYCoordinate();
 
-        final List<List<Integer>> possibleMovesList = getPossibleMovesByRanking(surroundingSquares);
+        final List<List<Integer>> possibleMovesList = getPossibleMovesByRanking(mower);
         final List<Integer> medRiskMoves   = possibleMovesList.get(2);
         final List<Integer> preferredMoves = possibleMovesList.get(3);
 

@@ -3,6 +3,7 @@ package com.osmowsis.osmowsisfinalproject.service.base;
 import com.osmowsis.osmowsisfinalproject.constant.Direction;
 import com.osmowsis.osmowsisfinalproject.constant.LawnSquareContent;
 import com.osmowsis.osmowsisfinalproject.constant.MowerMovementType;
+import com.osmowsis.osmowsisfinalproject.pojo.Coordinate;
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
 import com.osmowsis.osmowsisfinalproject.pojo.MowerMove;
 
@@ -18,6 +19,8 @@ import java.util.*;
  */
 public abstract class NextMowerMoveService
 {
+
+    private Set<Coordinate> gopherCoordinates = new HashSet<>();
     // ABSTRACT METHODS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
@@ -102,12 +105,13 @@ public abstract class NextMowerMoveService
      * 3 - Pref Moves:     These are the safest moves a mower can make, this is the subset of remaining moves that are
      *                     not considered forbidden, high risk, or medium risk.
      *
-     * @param surroundingSquares - The surrounding squares model for the mower
+     * //@param surroundingSquares - The surrounding squares model for the mower
      *
      * @return - 4 lists of moves: forbidden, high risk, medium risk, and preferred (in that order)
      */
-    protected List<List<Integer>> getPossibleMovesByRanking(final List<LawnSquareContent> surroundingSquares)
+    protected List<List<Integer>> getPossibleMovesByRanking( Mower mower)
     {
+        List<LawnSquareContent> surroundingSquares = mower.getSurroundingSquares();
         List<Integer> forbiddenMoves = new ArrayList<>();
         List<Integer> highRiskMoves  = new ArrayList<>();
         List<Integer> medRiskMoves   = new ArrayList<>();
@@ -118,11 +122,12 @@ public abstract class NextMowerMoveService
         {
             LawnSquareContent content = surroundingSquares.get(i);
 
-            if(content == LawnSquareContent.MOWER || content == LawnSquareContent.UNKNOWN)
+            if(content == LawnSquareContent.MOWER || content == LawnSquareContent.UNKNOWN
+                    || content == LawnSquareContent.EMPTY_GOPHER || content == LawnSquareContent.GRASS_GOPHER)
             {
                 highRiskMoves.add(i);
             }
-            else if(content == LawnSquareContent.FENCE || content == LawnSquareContent.CRATER)
+            else if(content == LawnSquareContent.FENCE )
             {
                 forbiddenMoves.add(i);
             }
@@ -133,7 +138,13 @@ public abstract class NextMowerMoveService
         {
             for(Integer idx : highRiskMoves)
             {
-                if(surroundingSquares.get(idx) == LawnSquareContent.MOWER)
+                if(surroundingSquares.get(idx) == LawnSquareContent.EMPTY_MOWER
+                || surroundingSquares.get(idx) == LawnSquareContent.EMPTY_MOWER_CHARGER
+                        || surroundingSquares.get(idx) == LawnSquareContent.EMPTY_GOPHER_CHARGER
+                        || surroundingSquares.get(idx) == LawnSquareContent.EMPTY_GOPHER
+                        || surroundingSquares.get(idx) == LawnSquareContent.GRASS_GOPHER
+
+                )
                 {
                     for(Integer riskyIndex : determineMedRiskMovesForHighRiskSquare(idx))
                     {

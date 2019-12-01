@@ -251,7 +251,7 @@ public class SimulationDataModel implements BaseDataModel
                                    final Direction startingDirection,
                                    final boolean strategic)
     {
-        List<LawnSquareContent> surroundingSquares = new ArrayList<>(Collections.nCopies(8, LawnSquareContent.UNKNOWN));
+        //List<LawnSquareContent> surroundingSquares = new ArrayList<>(Collections.nCopies(8, LawnSquareContent.UNKNOWN));
 
         Mower mower = new Mower();
         mower.setMowerNumber(mowers.size());
@@ -261,8 +261,8 @@ public class SimulationDataModel implements BaseDataModel
         mower.setCurrentEnergy(getStartingMowerEnergy());
         mower.setCurrentXCoordinate(xCoordinate);
         mower.setCurrentYCoordinate(yCoordinate);
-        mower.setSurroundingSquares(surroundingSquares);
-
+        CentralMowerMap.addMower(mower);
+        mower.setSurroundingSquares(CentralMowerMap.getSurroundingSquares(mower));
         mowers.add(mower);
         mowerQueue.addLast(mower);
 
@@ -364,6 +364,7 @@ public class SimulationDataModel implements BaseDataModel
             for(int j = 0; j < y; j++)
             {
                 lawnSquares.add(new LawnSquare(i, j, LawnSquareContent.GRASS));
+                CentralMowerMap.lawnSquares.add(new LawnSquare(i,j, LawnSquareContent.UNKNOWN));
             }
         }
     }
