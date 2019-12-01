@@ -25,6 +25,10 @@ public class Mower
     private boolean disabled;
     private boolean turnTaken;
     private List<LawnSquareContent> surroundingSquares;
+//    private int initStep;
+//    private int lawnLength;
+//    private int lawnWidth;
+//    private List<List<LawnSquareContent>> lawnMap;
 
 
 }
