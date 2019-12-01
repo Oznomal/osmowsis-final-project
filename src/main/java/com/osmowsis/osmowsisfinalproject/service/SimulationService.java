@@ -2,7 +2,9 @@ package com.osmowsis.osmowsisfinalproject.service;
 
 import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
+import com.osmowsis.osmowsisfinalproject.view.controller.AppContainerController;
 import com.osmowsis.osmowsisfinalproject.view.controller.LawnGridController;
+import com.osmowsis.osmowsisfinalproject.view.controller.ResultsDialogController;
 import com.osmowsis.osmowsisfinalproject.view.controller.SidebarController;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ public class SimulationService {
     private final MowerService mowerService;
     private final LawnGridController lawnGridController;
     private final SidebarController sidebarController;
+    private final ResultsDialogController resultsDialogController;
+    private final AppContainerController appContainerController;
 
     // CONSTRUCTOR
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +37,9 @@ public class SimulationService {
                              final GopherService gopherService,
                              final MowerService mowerService,
                              final LawnGridController lawnGridController,
-                             final SidebarController sidebarController)
+                             final SidebarController sidebarController,
+                             final ResultsDialogController resultsDialogController,
+                             final AppContainerController appContainerController)
     {
         this.simulationDataModel = simulationDataModel;
         this.simulationRiskProfileService = simulationRiskProfileService;
@@ -41,6 +47,8 @@ public class SimulationService {
         this.mowerService = mowerService;
         this.lawnGridController = lawnGridController;
         this.sidebarController = sidebarController;
+        this.resultsDialogController = resultsDialogController;
+        this.appContainerController = appContainerController;
     }
 
     // PUBLIC METHODS
@@ -88,7 +96,9 @@ public class SimulationService {
 
         if(isSimulationDone())
         {
-            // TODO: WIRE UP THE RESULTS TO BE DISPLAYED FROM HERE
+            resultsDialogController.getResultsDialog().setDialogContainer(appContainerController.getAppContainer());
+            resultsDialogController.updateResults();
+            resultsDialogController.getResultsDialog().show();
 
             return true;
         }

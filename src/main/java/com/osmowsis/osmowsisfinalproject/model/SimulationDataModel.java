@@ -21,6 +21,7 @@ import java.util.*;
  * Created on 11/26/2019
  */
 
+@Getter
 @Repository
 public class SimulationDataModel implements BaseDataModel
 {
@@ -29,49 +30,30 @@ public class SimulationDataModel implements BaseDataModel
     private SimpleIntegerProperty lawnXDimension;
     private SimpleIntegerProperty lawnYDimension;
     private SimpleIntegerProperty lawnArea;
-
-    @Getter
     private SimpleIntegerProperty startingGrassToCut;
-
-    @Getter
     private SimpleIntegerProperty remainingGrassToCut;
-
-    @Getter
     private SimpleIntegerProperty totalGrassCut;
 
-    @Getter
     private SimpleIntegerProperty activeMowerCount;
     private SimpleIntegerProperty startingMowerEnergy;
 
     private SimpleIntegerProperty gopherCount;
-
-    @Getter
     private SimpleIntegerProperty gopherPeriod;
 
-    @Getter
     private SimpleIntegerProperty turnsRemainingInPeriod;
 
-    @Getter
     private SimpleIntegerProperty currentTurn;
-
-    @Getter
     private SimpleIntegerProperty maxTurns;
 
-    @Getter
     @Setter
     private SimulationRiskProfile simulationRiskProfile;
 
-    @Getter
     private ObservableList<Mower> mowers;
     private Deque<Mower> mowerQueue;
 
-    @Getter
     private Mower currentMower;
 
-    @Getter
     private ObservableList<LawnSquare> lawnSquares;
-
-    @Getter
     private ObservableList<Gopher> gophers;
 
     // CONSTRUCTORS
@@ -344,9 +326,9 @@ public class SimulationDataModel implements BaseDataModel
         return startingMowerEnergy.get();
     }
 
-    public int getLawnXDimension(){ return lawnXDimension.get(); }
+    public int getLawnXDimensionInt(){ return lawnXDimension.get(); }
 
-    public int getLawnYDimension(){ return lawnYDimension.get(); }
+    public int getLawnYDimensionInt(){ return lawnYDimension.get(); }
 
 
     // PRIVATE METHODS

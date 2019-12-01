@@ -45,7 +45,6 @@ public class SidebarController implements Initializable
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private final SimulationDataModel simulationDataModel;
     private final LawnGridController lawnGridController;
-    private final StageManager stageManager;
     private final SimulationService simulationService;
     private final ResultsDialogController resultsDialogController;
     private final AppContainerController appContainerController;
@@ -90,9 +89,6 @@ public class SidebarController implements Initializable
     private HBox btnGroup2;
 
     @FXML
-    private HBox btnGroup3;
-
-    @FXML
     private JFXListView<Mower> mowerListView;
 
     @FXML
@@ -114,12 +110,10 @@ public class SidebarController implements Initializable
                              final LawnGridController lawnGridController,
                              final SimulationService simulationService,
                              final ResultsDialogController resultsDialogController,
-                             final AppContainerController appContainerController,
-                             @Lazy final StageManager stageManager)
+                             final AppContainerController appContainerController)
     {
         this.simulationDataModel = simulationDataModel;
         this.lawnGridController = lawnGridController;
-        this.stageManager = stageManager;
         this.simulationService = simulationService;
         this.resultsDialogController = resultsDialogController;
         this.appContainerController = appContainerController;
@@ -236,8 +230,6 @@ public class SidebarController implements Initializable
     public void handleFastForwardBtnClick()
     {
         simulationService.runFullSimulation();
-
-        // TODO: CHANGE THE VIEW TO THE FINAL VIEW HERE
     }
 
     /**
@@ -245,35 +237,9 @@ public class SidebarController implements Initializable
      */
     public void handleStopBtnClick()
     {
-        log.info("STOPPING THE SIMULATION");
         resultsDialogController.getResultsDialog().setDialogContainer(appContainerController.getAppContainer());
+        resultsDialogController.updateResults();
         resultsDialogController.getResultsDialog().show();
-
-        // TODO: CHANGE THE VIEW HERE TO GET THE FINAL VIEW AND DISABLE STUFF IN THE SIDEBAR
-
-        displayButtonGroup(btnGroup3);
-    }
-
-    /**
-     * Handles when the restart button is clicked
-     */
-    public void handleRestartBtnClick()
-    {
-        simulationDataModel.resetDataModel();
-
-        stageManager.switchScene(FXMLView.WELCOME);
-    }
-
-    /**
-     * Handles when the exit button is clicked
-     */
-    public void handleExitBtnClick()
-    {
-        simulationDataModel.resetDataModel();
-
-        stageManager.closeMainStage();
-
-        System.exit(0);
     }
 
     /**
@@ -338,7 +304,6 @@ public class SidebarController implements Initializable
     {
         btnGroup1.setVisible(btnGroup1 == btnGroup);
         btnGroup2.setVisible(btnGroup2 == btnGroup);
-        btnGroup3.setVisible(btnGroup3 == btnGroup);
     }
 
     // SPRING LOOKUPS

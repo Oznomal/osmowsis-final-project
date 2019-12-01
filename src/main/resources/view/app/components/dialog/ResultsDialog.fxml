@@ -122,7 +122,7 @@
                             <!-- _______-->
                             <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
                                 <children>
-                                    <Label text="Completion Percentage" styleClass="main-text">
+                                    <Label text="Completion Percentage:" styleClass="main-text">
                                         <font>
                                             <Font name="Roboto Light" size="18.0" />
                                         </font>

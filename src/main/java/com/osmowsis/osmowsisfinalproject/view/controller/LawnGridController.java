@@ -71,8 +71,8 @@ public class LawnGridController implements Initializable {
      */
     private void buildLawnModel()
     {
-        final int prefGridCellWidth = (int) lawnGridPane.getPrefWidth() / simulationDataModel.getLawnXDimension();
-        final int prefGridCellHeight = (int) lawnGridPane.getPrefHeight() / simulationDataModel.getLawnYDimension();
+        final int prefGridCellWidth = (int) lawnGridPane.getPrefWidth() / simulationDataModel.getLawnXDimensionInt();
+        final int prefGridCellHeight = (int) lawnGridPane.getPrefHeight() / simulationDataModel.getLawnYDimensionInt();
 
         log.info("[PREF HEIGHT] - {}", prefGridCellHeight);
         log.info("[PREF WIDTH] - {}", prefGridCellWidth);
@@ -80,7 +80,7 @@ public class LawnGridController implements Initializable {
         cellMap = new HashMap<>();
 
         // ADD THE COLUMN CONSTRAINTS
-        for (int i = 0; i < simulationDataModel.getLawnXDimension(); i++)
+        for (int i = 0; i < simulationDataModel.getLawnXDimensionInt(); i++)
         {
             ColumnConstraints constraint = new ColumnConstraints();
             constraint.setPrefWidth(prefGridCellWidth);
@@ -90,7 +90,7 @@ public class LawnGridController implements Initializable {
         }
 
         // ADD ROW CONSTRAINTS
-        for (int i = 0; i < simulationDataModel.getLawnYDimension(); i++)
+        for (int i = 0; i < simulationDataModel.getLawnYDimensionInt(); i++)
         {
             RowConstraints constraint = new RowConstraints();
             constraint.setPrefHeight(prefGridCellHeight);
@@ -133,7 +133,7 @@ public class LawnGridController implements Initializable {
      */
     private int getInvertedYAxisValue(final int originalValue)
     {
-        final int yMax = simulationDataModel.getLawnYDimension() - 1;
+        final int yMax = simulationDataModel.getLawnYDimensionInt() - 1;
 
         return yMax - originalValue;
     }
