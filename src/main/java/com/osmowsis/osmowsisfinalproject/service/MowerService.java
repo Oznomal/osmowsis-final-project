@@ -294,6 +294,9 @@ public class MowerService
     private void decrementEnergy(MowerMove mowerMove){
         Mower mower = mowerMove.getMower();
         mower.setCurrentEnergy(mower.getCurrentEnergy() - mowerMove.getMowerMovementType().getEnergyCost());
+        if (mower.getCurrentEnergy() <= 0){
+            mower.setDisabled(true);
+        }
     }
 
     private void rechargeMower(MowerMove mowerMove){
