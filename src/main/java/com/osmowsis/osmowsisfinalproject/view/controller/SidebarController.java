@@ -133,6 +133,7 @@ public class SidebarController implements Initializable
         simDetailsMaxTurnsLabel.textProperty().bind(simulationDataModel.getMaxTurns().asString());
         simDetailsStaringGrassLabel.textProperty().bind(simulationDataModel.getStartingGrassToCut().asString());
         simDetailsGopherPeriodLabel.textProperty().bind(simulationDataModel.getGopherPeriod().asString());
+        consoleTextArea.textProperty().bind(simulationDataModel.getConsoleText());
 
         // BINDS THE MOWER LIST VIEW TO THE ITEMS IN THE MODEL
         mowerListView.setItems(simulationDataModel.getMowers());
@@ -157,9 +158,6 @@ public class SidebarController implements Initializable
         mowerListView.managedProperty().bind(mowerListView.visibleProperty());
 
         gopherListView.managedProperty().bind(gopherListView.visibleProperty());
-
-
-        consoleTextArea.setText("Click Start to begin the simulation!");
     }
 
 
@@ -207,7 +205,7 @@ public class SidebarController implements Initializable
         simDetailsTotalGrassCutLabel.textProperty().bind(simulationDataModel.getTotalGrassCut().asString());
 
         // CLEAR THE CONSOLE
-        printConsoleMessage("", true);
+        simulationDataModel.updateConsoleText("", true);
 
         simulationDataModel.incrementCurrentTurn();
 
@@ -255,22 +253,6 @@ public class SidebarController implements Initializable
         for(Map.Entry<Gopher, SidebarGopherCellController> entry : gopherControllerMap.entrySet())
         {
             entry.getValue().setCellInfo(entry.getKey());
-        }
-    }
-
-    /**
-     * Prints a message to the console
-     *
-     * @param textToPrint - The message to print to the console
-     */
-    public void printConsoleMessage(final String textToPrint, boolean deletePreviousMessage)
-    {
-        if(deletePreviousMessage)
-        {
-            consoleTextArea.setText(textToPrint.trim());
-        }
-        else{
-            consoleTextArea.setText(consoleTextArea.getText() + "\n\n" + textToPrint);
         }
     }
 

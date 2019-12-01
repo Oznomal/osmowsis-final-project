@@ -30,7 +30,6 @@ public class MowerService
     private final NextMowerMoveService medRiskMoveService;
     private final NextMowerMoveService highRiskMoveService;
     private final SimulationRiskProfileService simulationRiskProfileService;
-    private final SidebarController sidebarController;
 
     // CONSTRUCTORS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,7 +38,6 @@ public class MowerService
     public MowerService(final SimulationDataModel simulationDataModel,
                         final LawnService lawnService,
                         final SimulationRiskProfileService simulationRiskProfileService,
-                        final SidebarController sidebarController,
                         @Qualifier("lowRiskMoveService") final NextMowerMoveService lowRiskMoveService,
                         @Qualifier("lowRiskMoveService") final NextMowerMoveService medRiskMoveService,
                         @Qualifier("highRiskMoveService") final NextMowerMoveService highRiskMoveService)
@@ -50,7 +48,6 @@ public class MowerService
         this.medRiskMoveService = medRiskMoveService;
         this.highRiskMoveService = highRiskMoveService;
         this.simulationRiskProfileService = simulationRiskProfileService;
-        this.sidebarController = sidebarController;
     }
 
     // PUBLIC METHODS
@@ -399,7 +396,7 @@ public class MowerService
         // DISPLAY MESSAGES THAT SHOULD BE DISPLAYED AFTER ORIGINAL MOVE MESSAGE
         if(!sb.toString().trim().isEmpty())
         {
-            sidebarController.printConsoleMessage(sb.toString(), false);
+            simulationDataModel.updateConsoleText(sb.toString(), false);
         }
 
         if(!recharged)
@@ -765,6 +762,6 @@ public class MowerService
                     .append(")");
         }
 
-        sidebarController.printConsoleMessage(sb.toString(), true);
+        simulationDataModel.updateConsoleText(sb.toString(), true);
     }
 }

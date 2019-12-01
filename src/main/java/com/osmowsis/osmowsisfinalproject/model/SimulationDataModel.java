@@ -7,6 +7,7 @@ import com.osmowsis.osmowsisfinalproject.pojo.Gopher;
 import com.osmowsis.osmowsisfinalproject.pojo.LawnSquare;
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -27,6 +28,8 @@ public class SimulationDataModel implements BaseDataModel
 {
     // FIELDS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private static final String STARTING_CONSOLE_MSG = "Click the start button to begin";
+
     private SimpleIntegerProperty lawnXDimension;
     private SimpleIntegerProperty lawnYDimension;
     private SimpleIntegerProperty lawnArea;
@@ -44,6 +47,8 @@ public class SimulationDataModel implements BaseDataModel
 
     private SimpleIntegerProperty currentTurn;
     private SimpleIntegerProperty maxTurns;
+
+    private SimpleStringProperty consoleText;
 
     @Setter
     private SimulationRiskProfile simulationRiskProfile;
@@ -94,6 +99,8 @@ public class SimulationDataModel implements BaseDataModel
 
         currentTurn = new SimpleIntegerProperty();
         maxTurns = new SimpleIntegerProperty();
+
+        consoleText = new SimpleStringProperty(STARTING_CONSOLE_MSG);
 
         simulationRiskProfile = SimulationRiskProfile.LOW;
     }
@@ -161,6 +168,23 @@ public class SimulationDataModel implements BaseDataModel
         }
 
         throw new RuntimeException("[GOPHER NOT FOUND] :: getGopherByCoordinates - No gopher located at coordinates");
+    }
+
+    /**
+     * Updates the data that is displayed on the console text
+     *
+     * @param consoleText - The new text to add
+     * @param deleteExistingText - Should the existing text be deleted
+     */
+    public void updateConsoleText(final String consoleText, boolean deleteExistingText)
+    {
+        if(deleteExistingText)
+        {
+            this.consoleText.setValue(consoleText.trim());
+        }
+        else{
+            this.consoleText.setValue(this.consoleText.get() + "\n\n" + consoleText.trim());
+        }
     }
 
     /**

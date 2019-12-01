@@ -39,6 +39,24 @@ public class GopherService
 
     // PUBLIC METHODS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void moveGopher(){
+        Gopher gopher = simulationDataModel.getGophers().get(currentGopherIndex);
+        Coordinate nextCoord = determineMove(gopher);
+        updateSimStateGopher(gopher, nextCoord);
+        currentGopherIndex++;
+        currentGopherIndex = currentGopherIndex%simulationDataModel.getGophers().size();
+        if (currentGopherIndex == 0){
+            simulationDataModel.incrementCurrentTurn();
+        }
+    }
+
+    public void moveAllGophers(){
+        this.currentGopherIndex = 0;
+        for(Gopher gopher: simulationDataModel.getGophers()){
+            moveGopher();
+        }
+    }
+
     public void updateSimStateGopher(Gopher gopher, Coordinate nextCoord) {
         LawnSquare newSquare = lawnService.getLawnSquareByCoordinates(nextCoord.getX(), nextCoord.getY());
 
@@ -47,29 +65,46 @@ public class GopherService
 
         if (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_MOWER) ){
             Mower collisionMower = simulationDataModel.getMowerByCoordinates(nextCoord.getX(), nextCoord.getY());
+
+            String consoleText = getGopherMoveText(gopher, nextCoord)
+                    + "\n\nGopher " + (gopher.getGopherNumber() + 1)
+                    + " is destroying Mower " + (collisionMower.getMowerNumber() + 1);
+
+            simulationDataModel.updateConsoleText(consoleText, true);
+
             mowerService.removeMowerInNewSquare(collisionMower);
             newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER);
             updateGopherPosition(gopher, nextCoord);
             updateOldSquare(oldSquare);
         }
         else if (newSquare.getLawnSquareContent().equals(LawnSquareContent.GRASS)){
+            simulationDataModel.updateConsoleText(getGopherMoveText(gopher, nextCoord), true);
             newSquare.setLawnSquareContent(LawnSquareContent.GRASS_GOPHER);
             updateGopherPosition(gopher, nextCoord);
             updateOldSquare(oldSquare);
         }
         else if (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_MOWER_CHARGER)){
             Mower collisionMower = simulationDataModel.getMowerByCoordinates(nextCoord.getX(), nextCoord.getY());
+
+            String consoleText = getGopherMoveText(gopher, nextCoord)
+                    + "\n\nGopher " + (gopher.getGopherNumber() + 1)
+                    + " is destroying Mower " + (collisionMower.getMowerNumber() + 1);
+
+            simulationDataModel.updateConsoleText(consoleText, true);
+
             mowerService.removeMowerInNewSquare(collisionMower);
             newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER_CHARGER);
             updateGopherPosition(gopher, nextCoord);
             updateOldSquare(oldSquare);
         }
         else if (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY)){
+            simulationDataModel.updateConsoleText(getGopherMoveText(gopher, nextCoord), true);
             newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER);
             updateGopherPosition(gopher, nextCoord);
             updateOldSquare(oldSquare);
         }
         else if (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_CHARGER)){
+            simulationDataModel.updateConsoleText(getGopherMoveText(gopher, nextCoord), true);
             newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER_CHARGER);
             updateGopherPosition(gopher, nextCoord);
             updateOldSquare(oldSquare);
@@ -78,8 +113,14 @@ public class GopherService
                 || (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_GOPHER)
                 || (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_GOPHER_CHARGER))))) {
             // DO nothing.
-        }
+            Gopher occupyingGopher = simulationDataModel.getGopherByCoordinates(nextCoord.getX(), nextCoord.getY());
 
+            String text = "Gopher " + (gopher.getGopherNumber() + 1)
+                    + " could not move to (" + nextCoord.getX() + "," + nextCoord.getY()
+                    + ") because it is occupied by Gopher " +  (occupyingGopher.getGopherNumber() + 1);
+
+            simulationDataModel.updateConsoleText(text, true);
+        }
     }
 
     private void updateOldSquare(LawnSquare oldSquare) {
@@ -211,21 +252,13 @@ public class GopherService
         }
     }
 
-    public void moveGopher(){
-        Gopher gopher = simulationDataModel.getGophers().get(currentGopherIndex);
-        Coordinate nextCoord = determineMove(gopher);
-        updateSimStateGopher(gopher, nextCoord);
-        currentGopherIndex++;
-        currentGopherIndex = currentGopherIndex%simulationDataModel.getGophers().size();
-        if (currentGopherIndex == 0){
-            simulationDataModel.incrementCurrentTurn();
-        }
-    }
+    private String getGopherMoveText(final Gopher gopher, final Coordinate nextCoord)
+    {
+        String text = "Gopher "
+                + (gopher.getGopherNumber() + 1) + " is moving from ("
+                + gopher.getXCoordinate() + "," + gopher.getYCoordinate() + ") to ("
+                + nextCoord.getX() + "," + nextCoord.getY() + ")";
 
-    public void moveAllGophers(){
-        this.currentGopherIndex = 0;
-        for(Gopher gopher: simulationDataModel.getGophers()){
-            moveGopher();
-        }
+        return text;
     }
 }
