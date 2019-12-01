@@ -73,14 +73,93 @@ public class CentralMowerMap {
         }
     }
 
-    public static int minDistanceToGopher(Coordinate coordinate){
+    public static int minDistanceToGopher(Mower mower, int directionIndex){
         int distance = Integer.MAX_VALUE;
         if (gopherCoords.size() > 0){
-
+            for (Coordinate gopherCoord: gopherCoords) {
+                Coordinate nextMoveCoord = getNextMoveCoord(mower, directionIndex);
+                int tempDistance = calculateDistance(nextMoveCoord, gopherCoord);
+                if (tempDistance < distance) distance = tempDistance;
+            }
         }
-        return 0;
+        return distance;
     }
 
+    private static Coordinate getNextMoveCoord(Mower mower, int directionIndex) {
+        if (directionIndex == 0){
+            return new Coordinate(mower.getCurrentXCoordinate(), mower.getCurrentYCoordinate()+1);
+        }
+        else if (directionIndex == 1){
+            return new Coordinate(mower.getCurrentXCoordinate()+1, mower.getCurrentYCoordinate()+1);
+        }
+        else if (directionIndex == 2){
+            return new Coordinate(mower.getCurrentXCoordinate()+1, mower.getCurrentYCoordinate());
+        }
+        else if (directionIndex == 3){
+            return new Coordinate(mower.getCurrentXCoordinate()-1, mower.getCurrentYCoordinate()-1);
+        }
+        else if (directionIndex == 4){
+            return new Coordinate(mower.getCurrentXCoordinate(), mower.getCurrentYCoordinate()-1);
+        }
+        else if (directionIndex == 5){
+            return new Coordinate(mower.getCurrentXCoordinate()-1, mower.getCurrentYCoordinate()-1);
+        }
+        else if (directionIndex == 6){
+            return new Coordinate(mower.getCurrentXCoordinate()-1, mower.getCurrentYCoordinate());
+        }
+        else  {
+            return new Coordinate(mower.getCurrentXCoordinate()-1, mower.getCurrentYCoordinate()+1);
+        }
+    }
+
+    private static int calculateDistance(Coordinate mowerCoord, Coordinate gopherCoord) {
+        if (mowerCoord.equals(gopherCoord)) return 0;
+
+        if (mowerCoord.getX() > gopherCoord.getX() && mowerCoord.getY() >gopherCoord.getY()){
+            //NORTHEAST
+            Coordinate newCoord = new Coordinate(gopherCoord.getX()+1, gopherCoord.getY()+1);
+            return calculateDistance(mowerCoord, newCoord) + 1;
+        }
+        else if (mowerCoord.getX() < gopherCoord.getX() && mowerCoord.getY() >gopherCoord.getY()) {
+            //NORTHWEST
+            Coordinate newCoord = new Coordinate(gopherCoord.getX()-1, gopherCoord.getY()+1);
+            return calculateDistance(mowerCoord, newCoord) + 1;
+        }
+        else if(mowerCoord.getX() < gopherCoord.getX() && mowerCoord.getY() < gopherCoord.getY()){
+            //SOUTHWEST
+            Coordinate newCoord = new Coordinate(gopherCoord.getX()-1, gopherCoord.getY()-1);
+            return calculateDistance(mowerCoord, newCoord) + 1;
+        }
+        else if (mowerCoord.getX() > gopherCoord.getX() && mowerCoord.getY() < gopherCoord.getY()){
+            //SOUTHEAST
+            Coordinate newCoord = new Coordinate(gopherCoord.getX()+1, gopherCoord.getY()-1);
+            return calculateDistance(mowerCoord, newCoord) + 1;
+        }
+        else if (mowerCoord.getX() == gopherCoord.getX()){
+            if (mowerCoord.getY() < gopherCoord.getY()){
+                //SOUTH
+                Coordinate newCoord = new Coordinate(gopherCoord.getX(), gopherCoord.getY()-1);
+                return calculateDistance(mowerCoord, newCoord) + 1;
+            }
+            else {
+                //NORTH
+                Coordinate newCoord = new Coordinate(gopherCoord.getX(), gopherCoord.getY()+1);
+                return calculateDistance(mowerCoord, newCoord) + 1;
+            }
+        }
+        else {
+            if (mowerCoord.getX() < gopherCoord.getX()){
+                //WEST
+                Coordinate newCoord = new Coordinate(gopherCoord.getX()-1, gopherCoord.getY());
+                return calculateDistance(mowerCoord, newCoord) + 1;
+            }
+            else {
+                //EAST
+                Coordinate newCoord = new Coordinate(gopherCoord.getX()+1, gopherCoord.getY());
+                return calculateDistance(mowerCoord, newCoord) + 1;
+            }
+        }
+    }
 
 
 }

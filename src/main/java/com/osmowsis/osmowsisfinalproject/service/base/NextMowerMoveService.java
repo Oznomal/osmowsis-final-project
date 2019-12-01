@@ -3,6 +3,7 @@ package com.osmowsis.osmowsisfinalproject.service.base;
 import com.osmowsis.osmowsisfinalproject.constant.Direction;
 import com.osmowsis.osmowsisfinalproject.constant.LawnSquareContent;
 import com.osmowsis.osmowsisfinalproject.constant.MowerMovementType;
+import com.osmowsis.osmowsisfinalproject.model.CentralMowerMap;
 import com.osmowsis.osmowsisfinalproject.pojo.Coordinate;
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
 import com.osmowsis.osmowsisfinalproject.pojo.MowerMove;
@@ -116,10 +117,12 @@ public abstract class NextMowerMoveService
         List<Integer> highRiskMoves  = new ArrayList<>();
         List<Integer> medRiskMoves   = new ArrayList<>();
         List<Integer> preferredMoves = new ArrayList<>();
+        List<Integer> minDistToGopher = new ArrayList<>();
 
         // 1. LOOP THROUGH THE LIST AND GET THE SQUARES THE SQUARE INDEXES WHICH ARE FORBIDDEN / HIGH RISK
         for(int i = 0; i < 8; i++)
         {
+            minDistToGopher.add(i, CentralMowerMap.minDistanceToGopher(mower, i));
             LawnSquareContent content = surroundingSquares.get(i);
 
             if(content == LawnSquareContent.MOWER || content == LawnSquareContent.UNKNOWN
@@ -130,6 +133,9 @@ public abstract class NextMowerMoveService
             else if(content == LawnSquareContent.FENCE )
             {
                 forbiddenMoves.add(i);
+            }
+            else if (minDistToGopher.get(i) < 2){
+                highRiskMoves.add(i);
             }
         }
 
@@ -150,7 +156,9 @@ public abstract class NextMowerMoveService
                     {
                         if(!forbiddenMoves.contains(riskyIndex)
                                 && !highRiskMoves.contains(riskyIndex)
-                                && !medRiskMoves.contains(riskyIndex))
+                                && !medRiskMoves.contains(riskyIndex)
+                                && minDistToGopher.get(idx) > 2
+                                && minDistToGopher.get(idx) <= 4)
                         {
                             medRiskMoves.add(riskyIndex);
                         }
