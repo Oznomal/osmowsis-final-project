@@ -1,13 +1,13 @@
 package com.osmowsis.osmowsisfinalproject.service;
 
+import com.osmowsis.osmowsisfinalproject.constant.Direction;
+import com.osmowsis.osmowsisfinalproject.constant.LawnSquareContent;
 import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
 
-import com.osmowsis.osmowsisfinalproject.pojo.Gopher;
-import com.osmowsis.osmowsisfinalproject.pojo.Mower;
+import com.osmowsis.osmowsisfinalproject.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -18,6 +18,7 @@ public class GopherService
     private final SimulationDataModel simulationDataModel;
     private final LawnService lawnService;
     private final MowerService mowerService;
+    private int currentGopherIndex = 0;
 
     // CONSTRUCTORS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,87 +35,192 @@ public class GopherService
 
     // PUBLIC METHODS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /**
-     * Gets a gopher based on the lawn coordinates throws an exception if the gopher is not located
-     *
-     * @param x - The x coordinate
-     * @param y - The y coordinate
-     *
-     * @return - The gopher that is located at the coordinates
-     */
-    public Gopher getGopherByCoordinates(final int x, final int y)
-    {
-        for(Gopher gopher : simulationDataModel.getGophers())
-        {
-            if(gopher.getXCoordinate() == x && gopher.getYCoordinate() == y)
-            {
-                return gopher;
-            }
+
+    public void updateSimStateGopher(Gopher gopher, Coordinate nextCoord) {
+        LawnSquare newSquare = lawnService.getLawnSquareByCoordinates(nextCoord.getX(), nextCoord.getY());
+
+        LawnSquare oldSquare =
+                lawnService.getLawnSquareByCoordinates(gopher.getXCoordinate(), gopher.getYCoordinate());
+
+        if (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_MOWER) ){
+            mowerService.removeMower(nextCoord);
+            newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER);
+            updateGopherPosition(gopher, nextCoord);
+            updateOldSquare(oldSquare);
+        }
+        else if (newSquare.getLawnSquareContent().equals(LawnSquareContent.GRASS)){
+            newSquare.setLawnSquareContent(LawnSquareContent.GRASS_GOPHER);
+            updateGopherPosition(gopher, nextCoord);
+            updateOldSquare(oldSquare);
+        }
+        else if (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_MOWER_CHARGER)){
+            mowerService.removeMower(nextCoord);
+            newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER_CHARGER);
+            updateGopherPosition(gopher, nextCoord);
+            updateOldSquare(oldSquare);
+        }
+        else if (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY)){
+            newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER);
+            updateGopherPosition(gopher, nextCoord);
+            updateOldSquare(oldSquare);
+        }
+        else if (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_CHARGER)){
+            newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER_CHARGER);
+            updateGopherPosition(gopher, nextCoord);
+            updateOldSquare(oldSquare);
+        }
+        else if ((newSquare.getLawnSquareContent().equals(LawnSquareContent.GRASS_GOPHER)
+                || (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_GOPHER)
+                || (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_GOPHER_CHARGER))))) {
+            // DO nothing.
         }
 
-        throw new RuntimeException("[INVALID GOPHER] :: getGopherByCoordinates - No gopher at coordinates");
     }
 
-//    public void updateSimStateGopher(Move move) {
-//        LawnSquare newSquare = lawnService.getLawnSquareByCoordinates(move.getNewXCoordinate(), move.getNewYCoordinate());
-//
-//        LawnSquare oldSquare =
-//                lawnService.getLawnSquareByCoordinates(move.getCurrentXCoordinate(), move.getCurrentYCoordinate());
-//
-//        if (oldSquare.getLawnSquareContent().equals(LawnSquareContent.GOPHERGRASS)){
-//            oldSquare.setLawnSquareContent(LawnSquareContent.GRASS);
-//        }
-//        else {
-//            oldSquare.setLawnSquareContent(LawnSquareContent.EMPTY);
-//        }
-//
-//        if (newSquare.getLawnSquareContent().equals(LawnSquareContent.MOWER)){
-//            mowerService.removeMower(move);
-//            newSquare.setLawnSquareContent(LawnSquareContent.GOPHER);
-//        }
-//        else if (newSquare.getLawnSquareContent().equals(LawnSquareContent.GRASS)){
-//            newSquare.setLawnSquareContent(LawnSquareContent.GOPHERGRASS);
-//        }
-//
-//    }
-//
-//    public Optional<Move> determineMove(Gopher gopher) {
-//        for (Direction direction : Direction.values()) {
-//            int newX = gopher.getxCoordinate() + direction.getxIncrement();
-//            int newY = gopher.getyCoordinate() + direction.getyIncrement();
-//            Move move = new Move(gopher.getName(), MowerMovementType.MOVE, direction,
-//                    gopher.getxCoordinate(), gopher.getyCoordinate(), newX, newY);
-//            if (lawnService.isValidMove(move)) {
-//                if (lawnService.getLawnSquareByCoordinates(newX, newY).getLawnSquareContent().equals(LawnSquareContent.MOWER)) {
-//                    gopher.move(direction);
-//                    return Optional.of(move);
-//                }
-//            }
-//        }
-//        Direction randDirection = Direction.randomDirection();
-//        int newX = gopher.getxCoordinate() + randDirection.getxIncrement();
-//        int newY = gopher.getyCoordinate() + randDirection.getyIncrement();
-//        Move move = new Move(gopher.getName(), MowerMovementType.MOVE, randDirection,
-//                gopher.getxCoordinate(), gopher.getyCoordinate(), newX, newY);
-//        if (lawnService.isValidMove(move)){
-//            gopher.move(randDirection);
-//            return Optional.of(move);
-//        }
-//        return Optional.empty();
-//    }
-//
-//    public void moveGopher(){
-//        Gopher gopher = gophers.get(currentGopherIndex);
-//        determineMove(gopher)
-//                .ifPresent(this::updateSimStateGopher);
-//        currentGopherIndex++;
-//        currentGopherIndex = currentGopherIndex&gophers.size();
-//    }
-//
-//    public void moveAllGophers(){
-//        this.currentGopherIndex = 0;
-//        for(Gopher gopher: gophers){
-//            moveGopher();
-//        }
-//    }
+    private void updateOldSquare(LawnSquare oldSquare) {
+        if (oldSquare.getLawnSquareContent().equals(LawnSquareContent.GRASS_GOPHER)){
+            oldSquare.setLawnSquareContent(LawnSquareContent.GRASS);
+        }
+        else if (oldSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_GOPHER)){
+            oldSquare.setLawnSquareContent(LawnSquareContent.EMPTY);
+        }
+        else if (oldSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_GOPHER_CHARGER)){
+            oldSquare.setLawnSquareContent(LawnSquareContent.EMPTY_CHARGER);
+        }
+
+    }
+
+    private void updateGopherPosition(Gopher gopher, Coordinate nextCoord) {
+        gopher.setXCoordinate(nextCoord.getX());
+        gopher.setYCoordinate(nextCoord.getY());
+    }
+
+    public Coordinate determineMove(Gopher gopher) {
+        List<Mower> mowers = simulationDataModel.getMowers();
+        int shortestDistance = Integer.MAX_VALUE;
+        Mower nearestMower = null;
+        for (Mower mower: mowers){
+            if (!mower.isDisabled()) {
+                Coordinate mowerCoord = new Coordinate(mower.getCurrentXCoordinate(), mower.getCurrentYCoordinate());
+                Coordinate gopherCoord = new Coordinate(gopher.getXCoordinate(), gopher.getYCoordinate());
+                int distance = calculateDistance(mowerCoord, gopherCoord);
+                if (distance < shortestDistance) {
+                    shortestDistance = distance;
+                    nearestMower = mower;
+                }
+            }
+        }
+        return createGopherMove(nearestMower, gopher);
+    }
+
+    private Coordinate createGopherMove(Mower nearestMower, Gopher gopher) {
+        Coordinate mowerCoord = new Coordinate(nearestMower.getCurrentXCoordinate(), nearestMower.getCurrentYCoordinate());
+        Coordinate gopherCoord = new Coordinate(gopher.getXCoordinate(), gopher.getYCoordinate());
+
+        if (mowerCoord.getX() > gopherCoord.getX() && mowerCoord.getY() >gopherCoord.getY()){
+            //NORTHEAST
+            return new Coordinate(gopher.getXCoordinate()+1, gopher.getYCoordinate()+1);
+
+        }
+        else if (mowerCoord.getX() < gopherCoord.getX() && mowerCoord.getY() >gopherCoord.getY()) {
+            //NORTHWEST
+            return new Coordinate(gopher.getXCoordinate()-1, gopher.getYCoordinate()+1);
+        }
+        else if(mowerCoord.getX() < gopherCoord.getX() && mowerCoord.getY() < gopherCoord.getY()){
+            //SOUTHWEST
+            return new Coordinate(gopher.getXCoordinate()-1, gopher.getYCoordinate()-1);
+        }
+        else if (mowerCoord.getX() > gopherCoord.getX() && mowerCoord.getY() < gopherCoord.getY()){
+            //SOUTHEAST
+            return new Coordinate(gopher.getXCoordinate()+1, gopher.getYCoordinate()-1);
+
+        }
+        else if (mowerCoord.getX() == gopherCoord.getX()){
+            if (mowerCoord.getY() < gopherCoord.getY()){
+                //SOUTH
+                return new Coordinate(gopher.getXCoordinate(), gopher.getYCoordinate()-1);
+            }
+            else {
+                //NORTH
+                return new Coordinate(gopher.getXCoordinate(), gopher.getYCoordinate()+1);
+            }
+        }
+        else {
+            if (mowerCoord.getX() < gopherCoord.getX()){
+                //WEST
+                return new Coordinate(gopher.getXCoordinate()-1, gopher.getYCoordinate());
+            }
+            else {
+                //EAST
+                return new Coordinate(gopher.getXCoordinate()+1, gopher.getYCoordinate());
+            }
+        }
+    }
+
+    private int calculateDistance(Coordinate mowerCoord, Coordinate gopherCoord) {
+        if (mowerCoord.equals(gopherCoord)) return 0;
+
+        if (mowerCoord.getX() > gopherCoord.getX() && mowerCoord.getY() >gopherCoord.getY()){
+            //NORTHEAST
+            Coordinate newCoord = new Coordinate(gopherCoord.getX()+1, gopherCoord.getY()+1);
+            return calculateDistance(mowerCoord, newCoord) + 1;
+        }
+        else if (mowerCoord.getX() < gopherCoord.getX() && mowerCoord.getY() >gopherCoord.getY()) {
+            //NORTHWEST
+            Coordinate newCoord = new Coordinate(gopherCoord.getX()-1, gopherCoord.getY()+1);
+            return calculateDistance(mowerCoord, newCoord) + 1;
+        }
+        else if(mowerCoord.getX() < gopherCoord.getX() && mowerCoord.getY() < gopherCoord.getY()){
+            //SOUTHWEST
+            Coordinate newCoord = new Coordinate(gopherCoord.getX()-1, gopherCoord.getY()-1);
+            return calculateDistance(mowerCoord, newCoord) + 1;
+        }
+        else if (mowerCoord.getX() > gopherCoord.getX() && mowerCoord.getY() < gopherCoord.getY()){
+            //SOUTHEAST
+            Coordinate newCoord = new Coordinate(gopherCoord.getX()+1, gopherCoord.getY()-1);
+            return calculateDistance(mowerCoord, newCoord) + 1;
+        }
+        else if (mowerCoord.getX() == gopherCoord.getX()){
+            if (mowerCoord.getY() < gopherCoord.getY()){
+                //SOUTH
+                Coordinate newCoord = new Coordinate(gopherCoord.getX(), gopherCoord.getY()-1);
+                return calculateDistance(mowerCoord, newCoord) + 1;
+            }
+            else {
+                //NORTH
+                Coordinate newCoord = new Coordinate(gopherCoord.getX(), gopherCoord.getY()+1);
+                return calculateDistance(mowerCoord, newCoord) + 1;
+            }
+        }
+        else {
+            if (mowerCoord.getX() < gopherCoord.getX()){
+                //WEST
+                Coordinate newCoord = new Coordinate(gopherCoord.getX()-1, gopherCoord.getY());
+                return calculateDistance(mowerCoord, newCoord) + 1;
+            }
+            else {
+                //EAST
+                Coordinate newCoord = new Coordinate(gopherCoord.getX()+1, gopherCoord.getY());
+                return calculateDistance(mowerCoord, newCoord) + 1;
+            }
+        }
+    }
+
+    public void moveGopher(){
+        Gopher gopher = simulationDataModel.getGophers().get(currentGopherIndex);
+        Coordinate nextCoord = determineMove(gopher);
+        updateSimStateGopher(gopher, nextCoord);
+        currentGopherIndex++;
+        currentGopherIndex = currentGopherIndex%simulationDataModel.getGophers().size();
+        if (currentGopherIndex == 0){
+            simulationDataModel.incrementCurrentTurn();
+        }
+    }
+
+    public void moveAllGophers(){
+        this.currentGopherIndex = 0;
+        for(Gopher gopher: simulationDataModel.getGophers()){
+            moveGopher();
+        }
+    }
 }

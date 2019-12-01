@@ -7,9 +7,19 @@ package com.osmowsis.osmowsisfinalproject.constant;
  */
 public enum MowerMovementType
 {
-    MOVE,
-    STEER,
-    C_SCAN,
-    L_SCAN,
-    PASS
+    MOVE(2),
+    STEER(1),
+    C_SCAN(1),
+    L_SCAN(3),
+    PASS(0);
+
+    private final int energyCost;
+
+    private MowerMovementType(int energyCost){
+        this.energyCost = energyCost;
+    }
+
+    public int getEnergyCost(){
+        return this.energyCost;
+    }
 }

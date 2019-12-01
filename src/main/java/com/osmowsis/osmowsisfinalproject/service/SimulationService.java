@@ -72,7 +72,7 @@ public class SimulationService {
             // TODO: THIS CAN BE REMOVED AFTER DEBUGGING AND DETERMINING THAT EVERYTHING WORKS
             log.info("[GOPHER PERIOD ALERT] - The gophers are changing their position");
 
-            //gopherService.moveAllGophers();
+            gopherService.moveGopher();
         }
         else {
             Mower mower = simulationDataModel.getNextMower();
