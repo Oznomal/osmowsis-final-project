@@ -1,17 +1,18 @@
 package com.osmowsis.osmowsisfinalproject.service;
 
-import com.osmowsis.osmowsisfinalproject.constant.*;
+import com.osmowsis.osmowsisfinalproject.constant.Direction;
+import com.osmowsis.osmowsisfinalproject.constant.LawnSquareContent;
+import com.osmowsis.osmowsisfinalproject.constant.MowerMovementType;
+import com.osmowsis.osmowsisfinalproject.constant.SimulationRiskProfile;
 import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
-import com.osmowsis.osmowsisfinalproject.pojo.Gopher;
+import com.osmowsis.osmowsisfinalproject.pojo.Coordinate;
 import com.osmowsis.osmowsisfinalproject.pojo.LawnSquare;
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
 import com.osmowsis.osmowsisfinalproject.pojo.MowerMove;
 import com.osmowsis.osmowsisfinalproject.service.base.NextMowerMoveService;
-import com.osmowsis.osmowsisfinalproject.view.controller.SidebarController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,22 +27,18 @@ public class MowerService
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private final SimulationDataModel simulationDataModel;
     private final LawnService lawnService;
-    private final GopherService gopherService;
     private final NextMowerMoveService lowRiskMoveService;
     private final NextMowerMoveService medRiskMoveService;
     private final NextMowerMoveService highRiskMoveService;
     private final SimulationRiskProfileService simulationRiskProfileService;
-    private final SidebarController sidebarController;
+
 
     // CONSTRUCTORS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    @Lazy
     @Autowired
     public MowerService(final SimulationDataModel simulationDataModel,
                         final LawnService lawnService,
                         final SimulationRiskProfileService simulationRiskProfileService,
-                        final SidebarController sidebarController,
-                        final GopherService gopherService,
                         @Qualifier("lowRiskMoveService") final NextMowerMoveService lowRiskMoveService,
                         @Qualifier("lowRiskMoveService") final NextMowerMoveService medRiskMoveService,
                         @Qualifier("highRiskMoveService") final NextMowerMoveService highRiskMoveService)
@@ -52,8 +49,6 @@ public class MowerService
         this.medRiskMoveService = medRiskMoveService;
         this.highRiskMoveService = highRiskMoveService;
         this.simulationRiskProfileService = simulationRiskProfileService;
-        this.sidebarController = sidebarController;
-        this.gopherService = gopherService;
     }
 
     // PUBLIC METHODS
@@ -72,7 +67,7 @@ public class MowerService
 
         final MowerMove nextMove = determineMove(mower);
 
-        displayMowerMove(nextMove);
+        log.info("The next move is: {}", nextMove);
 
         if(isValidMoveForMower(nextMove))
         {
@@ -95,6 +90,8 @@ public class MowerService
             else{
                 preformPass(mower);
             }
+
+            updateSimStateForMowerMove(nextMove);
         }
         else{
             disableMower(nextMove);
@@ -131,6 +128,24 @@ public class MowerService
             if(!mower.isDisabled())
             {
                 mower.setTurnTaken(false);
+            }
+        }
+    }
+
+    /**
+     * Removes the mower in the new square
+     *
+     */
+    public void removeMower(Coordinate coord)
+    {
+        for(Mower mower : simulationDataModel.getMowers())
+        {
+            if(mower.getCurrentXCoordinate() == coord.getX()
+                    && mower.getCurrentYCoordinate() == coord.getY())
+            {
+                mower.setDisabled(true);
+
+                decrementActiveMowers();
             }
         }
     }
@@ -195,7 +210,7 @@ public class MowerService
             }
         }
 
-        updateSimStateForMowerMove(move);
+        //updateSimStateForMowerMove(move);
 
         return response;
     }
@@ -246,7 +261,7 @@ public class MowerService
     {
         if(!isMowerMoveOnChargingSquare(move))
         {
-            // TODO: TAKE AWAY THE ENERGY FOR THE MOVE
+            decrementEnergy(move);
         }
     }
 
@@ -259,7 +274,7 @@ public class MowerService
     {
         if(!isMowerMoveOnChargingSquare(move))
         {
-            // TODO: TAKE AWAY THE ENERGY FOR THE MOVE
+            decrementEnergy(move);
         }
     }
 
@@ -272,8 +287,17 @@ public class MowerService
     {
         if(!isMowerMoveOnChargingSquare(move))
         {
-            // TODO: TAKE AWAY THE ENERGY FOR THE MOVE
+            decrementEnergy(move);
         }
+    }
+
+    private void decrementEnergy(MowerMove mowerMove){
+        Mower mower = mowerMove.getMower();
+        mower.setCurrentEnergy(mower.getCurrentEnergy() - mowerMove.getMowerMovementType().getEnergyCost());
+    }
+
+    private void rechargeMower(MowerMove mowerMove){
+        mowerMove.getMower().setCurrentEnergy(simulationDataModel.getStartingMowerEnergy());
     }
 
     /**
@@ -298,8 +322,6 @@ public class MowerService
 
         boolean recharged = false;
 
-        StringBuilder sb = new StringBuilder();
-
         if(lawnService.doesContentContainObstacle(newContent))
         {
             decrementActiveMowers();
@@ -308,48 +330,21 @@ public class MowerService
             // WHEN THE MOWER GOES OVER GOPHER, IT GETS CHEWED BUT STILL CUTS THE GRASS FIRST
             if(newContent == LawnSquareContent.GRASS_GOPHER)
             {
-                final Gopher gopher =
-                        gopherService.getGopherByCoordinates(newSquare.getXCoordinate(), newSquare.getYCoordinate());
-
-                sb.append("Gopher ")
-                        .append((gopher.getGopherNumber() + 1))
-                        .append(" destroyed Mower ")
-                        .append((move.getMower().getMowerNumber() + 1));
-
                 lawnService.incrementGrassCut();
 
                 newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER);
             }
             else if(newContent == LawnSquareContent.EMPTY_MOWER)
             {
-                Mower collisionMower = getMowerByCoordinates(newSquare.getXCoordinate(), newSquare.getXCoordinate());
-
-                removeMowerInNewSquare(collisionMower);
-
-                sb.append("Mower ")
-                        .append((move.getMower().getMowerNumber() + 1))
-                        .append(" collided with Mower ")
-                        .append((collisionMower.getMowerNumber() + 1));
+                removeMowerInNewSquare(move);
 
                 newSquare.setLawnSquareContent(LawnSquareContent.EMPTY);
             }
             else if(newContent == LawnSquareContent.EMPTY_MOWER_CHARGER)
             {
-                Mower collisionMower = getMowerByCoordinates(newSquare.getXCoordinate(), newSquare.getXCoordinate());
-
-                removeMowerInNewSquare(collisionMower);
-
-                sb.append("Mower ")
-                        .append((move.getMower().getMowerNumber() + 1))
-                        .append(" collided with Mower ")
-                        .append((collisionMower.getMowerNumber() + 1));
+                removeMowerInNewSquare(move);
 
                 newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_CHARGER);
-            }
-            else{
-                sb.append("Mower ")
-                        .append((move.getMower().getMowerNumber() + 1))
-                        .append(" collided with a Fence");
             }
         }
         else if(newContent == LawnSquareContent.EMPTY)
@@ -360,36 +355,22 @@ public class MowerService
         {
             newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_MOWER);
 
-            sb.append("Mower ")
-                    .append((move.getMower().getMowerNumber() + 1))
-                    .append(" successfully cut 1 square!");
-
             lawnService.incrementGrassCut();
         }
         else if(newContent == LawnSquareContent.EMPTY_CHARGER)
         {
             newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_MOWER_CHARGER);
 
-            sb.append("MOWER ")
-                    .append((move.getMower().getMowerNumber() + 1))
-                    .append(" is now recharged!");
-
             recharged = true;
-            // TODO: NEED TO IMPLEMENT CHARGING STUFF HERE, UPDATE THE MOWERS BATTERY BACK TO THE STARTING AMOUNT
+            rechargeMower(move);
         }
         else{
             throw new RuntimeException("[UPDATE ERROR] :: updateSimStateForMowerMove - Invalid new content scenario");
         }
 
-        // DISPLAY MESSAGES THAT SHOULD BE DISPLAYED AFTER ORIGINAL MOVE MESSAGE
-        if(!sb.toString().trim().isEmpty())
-        {
-            sidebarController.printConsoleMessage(sb.toString(), false);
-        }
-
         if(!recharged)
         {
-            // TODO: TAKE AWAY THE ENERGY FOR THE MOVE
+            decrementEnergy(move);
         }
     }
 
@@ -411,37 +392,20 @@ public class MowerService
     /**
      * Removes the mower in the new square
      *
-     * @param mower - The mower to remove
+     * @param mowerMove - The mower move
      */
-    private void removeMowerInNewSquare(Mower mower)
-    {
-        mower.setDisabled(true);
-
-        mower.setCurrentXCoordinate(Integer.MIN_VALUE);
-        mower.setCurrentYCoordinate(Integer.MIN_VALUE);
-
-        decrementActiveMowers();
-    }
-
-    /**
-     * Gets a mower by its x and y coordinates, throws exception if not found
-     *
-     * @param x - The x coordinate
-     * @param y - The y coordinate
-     *
-     * @return - The mower at the coordinates
-     */
-    private Mower getMowerByCoordinates(final int x, final int y)
+    private void removeMowerInNewSquare(MowerMove mowerMove)
     {
         for(Mower mower : simulationDataModel.getMowers())
         {
-            if(mower.getCurrentXCoordinate() == x && mower.getCurrentYCoordinate() == y)
+            if(mower.getCurrentXCoordinate() == mowerMove.getNewXCoordinate()
+                    && mower.getCurrentYCoordinate() == mowerMove.getCurrentYCoordinate())
             {
-                return mower;
+                mower.setDisabled(true);
+
+                decrementActiveMowers();
             }
         }
-
-        throw new RuntimeException("[INVALID MOWER] :: getMowerByCoordinates - No mower at coordinates");
     }
 
     /**
@@ -691,86 +655,17 @@ public class MowerService
     {
         nextMove.getMower().setDisabled(true);
 
-        LawnSquareContent newContent = lawnService.getLawnSquareContentByCoordinates(
-                nextMove.getNewXCoordinate(), nextMove.getNewYCoordinate());
+        LawnSquare lawnSquare = lawnService.getLawnSquareByCoordinates(nextMove.getMower().getCurrentXCoordinate(),
+                nextMove.getMower().getCurrentYCoordinate());
 
-        if(newContent != LawnSquareContent.EMPTY_MOWER)
-        {
-            nextMove.getMower().setCurrentXCoordinate(Integer.MIN_VALUE);
-            nextMove.getMower().setCurrentYCoordinate(Integer.MIN_VALUE);
-        }
-    }
+        nextMove.getMower().setCurrentXCoordinate(Integer.MIN_VALUE);
+        nextMove.getMower().setCurrentYCoordinate(Integer.MIN_VALUE);
 
-    /**
-     * Displays the mower move
-     */
-    private void displayMowerMove(final MowerMove mowerMove)
-    {
-        final StringBuilder sb = new StringBuilder();
-
-        if(mowerMove.getMowerMovementType() == MowerMovementType.MOVE)
-        {
-            sb.append(CSS.MOWER_NAME_PREFIX)
-                    .append(" ")
-                    .append(mowerMove.getMower().getMowerNumber() + 1).append(" moved ")
-                    .append(mowerMove.getDirection().getAbbreviation())
-                    .append(" from (")
-                    .append(mowerMove.getCurrentXCoordinate())
-                    .append(",")
-                    .append(mowerMove.getCurrentYCoordinate())
-                    .append(") to (")
-                    .append(mowerMove.getNewXCoordinate())
-                    .append(",")
-                    .append(mowerMove.getNewYCoordinate())
-                    .append(")");
+        if (lawnSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_MOWER)){
+            lawnSquare.setLawnSquareContent(LawnSquareContent.EMPTY);
         }
-        else if(mowerMove.getMowerMovementType() == MowerMovementType.C_SCAN)
-        {
-            sb.append(CSS.MOWER_NAME_PREFIX)
-                    .append(" ")
-                    .append(mowerMove.getMower().getMowerNumber() + 1)
-                    .append(" performed cscan while located at (")
-                    .append(mowerMove.getCurrentXCoordinate())
-                    .append(",")
-                    .append(mowerMove.getCurrentYCoordinate())
-                    .append(")");
+        else if ( lawnSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_MOWER_CHARGER)){
+          lawnSquare.setLawnSquareContent(LawnSquareContent.EMPTY_CHARGER);
         }
-        else if(mowerMove.getMowerMovementType() == MowerMovementType.L_SCAN)
-        {
-            sb.append(CSS.MOWER_NAME_PREFIX)
-                    .append(" ")
-                    .append(mowerMove.getMower().getMowerNumber() + 1)
-                    .append(" performed lscan while located at (")
-                    .append(mowerMove.getCurrentXCoordinate())
-                    .append(",")
-                    .append(mowerMove.getCurrentYCoordinate())
-                    .append(")");
-        }
-        else if(mowerMove.getMowerMovementType() == MowerMovementType.STEER)
-        {
-            sb.append(CSS.MOWER_NAME_PREFIX)
-                    .append(" ")
-                    .append(mowerMove.getMower().getMowerNumber() + 1)
-                    .append(" steered ")
-                    .append(mowerMove.getDirection().getAbbreviation())
-                    .append(" while located at (")
-                    .append(mowerMove.getCurrentXCoordinate())
-                    .append(",")
-                    .append(mowerMove.getCurrentYCoordinate())
-                    .append(")");
-        }
-        else if(mowerMove.getMowerMovementType() == MowerMovementType.PASS)
-        {
-            sb.append(CSS.MOWER_NAME_PREFIX)
-                    .append(" ")
-                    .append(mowerMove.getMower().getMowerNumber() + 1)
-                    .append(" passed while located at (")
-                    .append(mowerMove.getCurrentXCoordinate())
-                    .append(",")
-                    .append(mowerMove.getCurrentYCoordinate())
-                    .append(")");
-        }
-
-        sidebarController.printConsoleMessage(sb.toString(), true);
     }
 }
