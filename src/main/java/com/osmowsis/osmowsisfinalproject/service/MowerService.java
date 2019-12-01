@@ -14,10 +14,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 @Slf4j
 @Service
 public class MowerService
@@ -66,6 +62,8 @@ public class MowerService
         {
             throw new RuntimeException("[MOWER MOVE ERROR] :: makeMove - Invalid Mower");
         }
+
+        mower.setSurroundingSquares(mapModel.getSurroundingSquares(mower));
 
         final MowerMove nextMove = determineMove(mower);
 
@@ -311,6 +309,10 @@ public class MowerService
         oldSquare.setLawnSquareContent(
                 lawnService.getNewLawnContentForDepartingMower(oldSquare.getLawnSquareContent()));
 
+        // UPDATE THE OLD SQUARE IN THE MOWER MODEL MAP
+        mapModel.updateLawnSquareContent(oldSquare.getLawnSquareContent(),
+                oldSquare.getXCoordinate(), oldSquare.getYCoordinate());
+
         boolean recharged = false;
 
         StringBuilder sb = new StringBuilder();
@@ -397,6 +399,17 @@ public class MowerService
         }
         else{
             throw new RuntimeException("[UPDATE ERROR] :: updateSimStateForMowerMove - Invalid new content scenario");
+        }
+
+        // UPDATE THE MOWER MAP MODEL WITH THE N
+        if(newSquare == null || newSquare.getLawnSquareContent() == null)
+        {
+            mapModel.updateLawnSquareContent(LawnSquareContent.FENCE, -1, -1);
+        }
+        else{
+            mapModel.updateLawnSquareContent(newSquare.getLawnSquareContent(),
+                    newSquare.getXCoordinate(), newSquare.getYCoordinate());
+
         }
 
         // DISPLAY MESSAGES THAT SHOULD BE DISPLAYED AFTER ORIGINAL MOVE MESSAGE
