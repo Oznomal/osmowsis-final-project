@@ -1,13 +1,13 @@
 package com.osmowsis.osmowsisfinalproject.service;
 
 import com.osmowsis.osmowsisfinalproject.constant.*;
+import com.osmowsis.osmowsisfinalproject.model.MapModel;
 import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
 import com.osmowsis.osmowsisfinalproject.pojo.Gopher;
 import com.osmowsis.osmowsisfinalproject.pojo.LawnSquare;
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
 import com.osmowsis.osmowsisfinalproject.pojo.MowerMove;
 import com.osmowsis.osmowsisfinalproject.service.base.NextMowerMoveService;
-import com.osmowsis.osmowsisfinalproject.view.controller.SidebarController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,6 +25,7 @@ public class MowerService
     // FIELDS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private final SimulationDataModel simulationDataModel;
+    private final MapModel mapModel;
     private final LawnService lawnService;
     private final NextMowerMoveService lowRiskMoveService;
     private final NextMowerMoveService medRiskMoveService;
@@ -36,6 +37,7 @@ public class MowerService
     @Lazy
     @Autowired
     public MowerService(final SimulationDataModel simulationDataModel,
+                        final MapModel mapModel,
                         final LawnService lawnService,
                         final SimulationRiskProfileService simulationRiskProfileService,
                         @Qualifier("lowRiskMoveService") final NextMowerMoveService lowRiskMoveService,
@@ -43,6 +45,7 @@ public class MowerService
                         @Qualifier("highRiskMoveService") final NextMowerMoveService highRiskMoveService)
     {
         this.simulationDataModel = simulationDataModel;
+        this.mapModel = mapModel;
         this.lawnService = lawnService;
         this.lowRiskMoveService = lowRiskMoveService;
         this.medRiskMoveService = medRiskMoveService;
@@ -204,7 +207,7 @@ public class MowerService
             }
         }
 
-        updateSimStateForMowerMove(move);
+        updateSimStateForMowerMove(move, response);
 
         return response;
     }
@@ -216,8 +219,9 @@ public class MowerService
      * This happens before the move is actually made
      *
      * @param move - The move that is going to be made
+     * @param validMove - Was the move actually valid
      */
-    private void updateSimStateForMowerMove(final MowerMove move)
+    private void updateSimStateForMowerMove(final MowerMove move, final boolean validMove)
     {
         switch(move.getMowerMovementType())
         {
@@ -238,7 +242,8 @@ public class MowerService
                 break;
 
             case MOVE:
-                updateSimForMowerMove(move);
+                updateSimForMowerMove(move, validMove);
+                updateCentralMap(move);
                 break;
 
             default:
@@ -255,7 +260,7 @@ public class MowerService
     {
         if(!isMowerMoveOnChargingSquare(move))
         {
-            move.getMower().setCurrentEnergy(move.getMower().getCurrentEnergy() - MowerMovementType.STEER.getEnergyCost());
+            decrementEnergy(move, true);
         }
     }
 
@@ -268,7 +273,7 @@ public class MowerService
     {
         if(!isMowerMoveOnChargingSquare(move))
         {
-            move.getMower().setCurrentEnergy(move.getMower().getCurrentEnergy() - MowerMovementType.L_SCAN.getEnergyCost());
+            decrementEnergy(move, true);
         }
     }
 
@@ -281,7 +286,7 @@ public class MowerService
     {
         if(!isMowerMoveOnChargingSquare(move))
         {
-            move.getMower().setCurrentEnergy(move.getMower().getCurrentEnergy() - MowerMovementType.C_SCAN.getEnergyCost());
+            decrementEnergy(move, true);
         }
     }
 
@@ -289,8 +294,9 @@ public class MowerService
      * Updates the sim state for MOVE move types
      *
      * @param move - The move
+     * @param validMove - Was the move actually valid
      */
-    private void updateSimForMowerMove(final MowerMove move)
+    private void updateSimForMowerMove(final MowerMove move, final boolean validMove)
     {
         final LawnSquare newSquare = lawnService.getLawnSquareByCoordinates(
                 move.getNewXCoordinate(), move.getNewYCoordinate());
@@ -401,7 +407,36 @@ public class MowerService
 
         if(!recharged)
         {
-            move.getMower().setCurrentEnergy(move.getMower().getCurrentEnergy() - MowerMovementType.MOVE.getEnergyCost());
+            decrementEnergy(move, validMove);
+        }
+    }
+
+    /**
+     * Takes away the energy from the mower and disables it if need be
+     *
+     * @param move - The move to decrement the energy for
+     * @param validMove - Was the move actually valid
+     */
+    private void decrementEnergy(final MowerMove move, final boolean validMove)
+    {
+        final Mower mower = move.getMower();
+
+        final int newEnergy = mower.getCurrentEnergy() - move.getMowerMovementType().getEnergyCost();
+
+        mower.setCurrentEnergy(newEnergy < 0 ? 0 : newEnergy);
+
+        if(newEnergy <= 0)
+        {
+            mower.setDisabled(true);
+
+            // IF THE MOVE WAS INVALID THEN THAT MEANS A COLLISION OF COME SORTS OCCURRED, WE STILL WANT TO SHOW THE
+            // ENERGY THAT WAS CONSUMED MAKING THE MOVE, BUT WE DON'T SHOW THIS MESSAGE PLUS THE COLLISION MESSAGE
+            if(validMove)
+            {
+                String consoleMsg = "Mower " + (mower.getMowerNumber() + 1) + " has run out of energy";
+
+                simulationDataModel.updateConsoleText(consoleMsg, false);
+            }
         }
     }
 
@@ -473,16 +508,26 @@ public class MowerService
         final int x = mower.getCurrentXCoordinate();
         final int y = mower.getCurrentYCoordinate();
 
-        List<LawnSquareContent> surroundingSquares = mower.getSurroundingSquares();
+//        List<LawnSquareContent> surroundingSquares = mower.getSurroundingSquares();
+//
+//        surroundingSquares.set(0, lawnService.getLawnSquareContentByCoordinates(x, y + 1));
+//        surroundingSquares.set(1, lawnService.getLawnSquareContentByCoordinates(x + 1, y + 1));
+//        surroundingSquares.set(2, lawnService.getLawnSquareContentByCoordinates(x + 1, y));
+//        surroundingSquares.set(3, lawnService.getLawnSquareContentByCoordinates(x + 1, y - 1));
+//        surroundingSquares.set(4, lawnService.getLawnSquareContentByCoordinates(x, y - 1));
+//        surroundingSquares.set(5, lawnService.getLawnSquareContentByCoordinates(x - 1, y - 1));
+//        surroundingSquares.set(6, lawnService.getLawnSquareContentByCoordinates(x - 1, y));
+//        surroundingSquares.set(7, lawnService.getLawnSquareContentByCoordinates(x - 1, y + 1));
 
-        surroundingSquares.set(0, lawnService.getLawnSquareContentByCoordinates(x, y + 1));
-        surroundingSquares.set(1, lawnService.getLawnSquareContentByCoordinates(x + 1, y + 1));
-        surroundingSquares.set(2, lawnService.getLawnSquareContentByCoordinates(x + 1, y));
-        surroundingSquares.set(3, lawnService.getLawnSquareContentByCoordinates(x + 1, y - 1));
-        surroundingSquares.set(4, lawnService.getLawnSquareContentByCoordinates(x, y - 1));
-        surroundingSquares.set(5, lawnService.getLawnSquareContentByCoordinates(x - 1, y - 1));
-        surroundingSquares.set(6, lawnService.getLawnSquareContentByCoordinates(x - 1, y));
-        surroundingSquares.set(7, lawnService.getLawnSquareContentByCoordinates(x - 1, y + 1));
+        mapModel.updateLawnSquareContent( lawnService.getLawnSquareContentByCoordinates(x, y + 1), x, y+1);
+        mapModel.updateLawnSquareContent( lawnService.getLawnSquareContentByCoordinates(x+1, y + 1), x+1, y+1);
+        mapModel.updateLawnSquareContent( lawnService.getLawnSquareContentByCoordinates(x+1, y), x+1, y);
+        mapModel.updateLawnSquareContent( lawnService.getLawnSquareContentByCoordinates(x+1, y - 1), x+1, y-1);
+        mapModel.updateLawnSquareContent( lawnService.getLawnSquareContentByCoordinates(x, y - 1), x, y-1);
+        mapModel.updateLawnSquareContent( lawnService.getLawnSquareContentByCoordinates(x-1, y - 1), x-1, y-1);
+        mapModel.updateLawnSquareContent( lawnService.getLawnSquareContentByCoordinates(x-1, y), x-1, y);
+        mapModel.updateLawnSquareContent( lawnService.getLawnSquareContentByCoordinates(x-1, y + 1), x-1, y+1);
+        mower.setSurroundingSquares(mapModel.getSurroundingSquares(mower));
 
         mower.setTurnsSinceLastScan(0);
     }
@@ -492,26 +537,23 @@ public class MowerService
      *
      * @param mower - The mower
      */
-    private List<LawnSquareContent> preformLScan(final Mower mower)
+    private void preformLScan(final Mower mower)
     {
         final int x = mower.getCurrentXCoordinate();
         final int y = mower.getCurrentYCoordinate();
         final Direction d = mower.getCurrentDirection();
-        List<LawnSquareContent> lawnSquareContents = new ArrayList<>();
         int curX=x;
         int curY=y;
         while (true){
             curX = curX + d.getxIncrement();
-            curY =curY + d.getyIncrement();
+            curY = curY + d.getyIncrement();
             LawnSquareContent lc = lawnService.getLawnSquareContentByCoordinates(curX, curY);
-            lawnSquareContents.add(lc);
+            mapModel.updateLawnSquareContent(lc, curX, curY);
             if(lc.equals(LawnSquareContent.FENCE)){
                 break;
             }
 
         }
-
-        return lawnSquareContents;
     }
 
     /**
@@ -531,146 +573,146 @@ public class MowerService
      */
     private void updateSurroundingSquaresAfterMove(final Mower mower)
     {
-        final Direction direction = mower.getCurrentDirection();
+//        final Direction direction = mower.getCurrentDirection();
+//
+//        List<LawnSquareContent> surroundingSquares = mower.getSurroundingSquares();
+//
+//        List<LawnSquareContent> newModel = new ArrayList<>(Collections.nCopies(8, null));
+//
+//        if(direction == Direction.NORTH) // MOVING TO POSITION 0 IN THE EXISTING MODEL
+//        {
+//            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
+//            newModel.set(2, surroundingSquares.get(1));
+//            newModel.set(3, surroundingSquares.get(2));
+//            newModel.set(5, surroundingSquares.get(6));
+//            newModel.set(6, surroundingSquares.get(7));
+//
+//            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
+//            newModel.set(4, LawnSquareContent.EMPTY);
+//
+//            // SET THE VALUES OF THE UNKNOWN SQUARES
+//            newModel.set(0, LawnSquareContent.UNKNOWN);
+//            newModel.set(1, LawnSquareContent.UNKNOWN);
+//            newModel.set(7, LawnSquareContent.UNKNOWN);
+//        }
+//        else if(direction == Direction.NORTHEAST) // MOVING TO POSITION 1 IN THE EXISTING MODEL
+//        {
+//            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
+//            newModel.set(4, surroundingSquares.get(2));
+//            newModel.set(6, surroundingSquares.get(0));
+//
+//            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
+//            newModel.set(5, LawnSquareContent.EMPTY);
+//
+//            // SET THE VALUES OF THE UNKNOWN SQUARES
+//            newModel.set(0, LawnSquareContent.UNKNOWN);
+//            newModel.set(1, LawnSquareContent.UNKNOWN);
+//            newModel.set(2, LawnSquareContent.UNKNOWN);
+//            newModel.set(3, LawnSquareContent.UNKNOWN);
+//            newModel.set(7, LawnSquareContent.UNKNOWN);
+//        }
+//        else if(direction == Direction.EAST) // MOVING TO POSITION 2 IN THE EXISTING MODEL
+//        {
+//            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
+//            newModel.set(0, surroundingSquares.get(1));
+//            newModel.set(4, surroundingSquares.get(3));
+//            newModel.set(5, surroundingSquares.get(4));
+//            newModel.set(7, surroundingSquares.get(0));
+//
+//            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
+//            newModel.set(6, LawnSquareContent.EMPTY);
+//
+//            // SET THE VALUES OF THE UNKNOWN SQUARES
+//            newModel.set(1, LawnSquareContent.UNKNOWN);
+//            newModel.set(2, LawnSquareContent.UNKNOWN);
+//            newModel.set(3, LawnSquareContent.UNKNOWN);
+//        }
+//        else if(direction == Direction.SOUTHEAST) // MOVING TO POSITION 3 IN THE EXISTING MODEL
+//        {
+//            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
+//            newModel.set(0, surroundingSquares.get(2));
+//            newModel.set(6, surroundingSquares.get(4));
+//
+//            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
+//            newModel.set(7, LawnSquareContent.EMPTY);
+//
+//            // SET THE VALUES OF THE UNKNOWN SQUARES
+//            newModel.set(1, LawnSquareContent.UNKNOWN);
+//            newModel.set(2, LawnSquareContent.UNKNOWN);
+//            newModel.set(3, LawnSquareContent.UNKNOWN);
+//            newModel.set(4, LawnSquareContent.UNKNOWN);
+//            newModel.set(5, LawnSquareContent.UNKNOWN);
+//        }
+//        else if(direction == Direction.SOUTH) // MOVING TO POSITION 4 IN THE EXISTING MODEL
+//        {
+//            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
+//            newModel.set(1, surroundingSquares.get(2));
+//            newModel.set(2, surroundingSquares.get(3));
+//            newModel.set(6, surroundingSquares.get(5));
+//            newModel.set(7, surroundingSquares.get(6));
+//
+//            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
+//            newModel.set(0, LawnSquareContent.EMPTY);
+//
+//            // SET THE VALUES OF THE UNKNOWN SQUARES
+//            newModel.set(3, LawnSquareContent.UNKNOWN);
+//            newModel.set(4, LawnSquareContent.UNKNOWN);
+//            newModel.set(5, LawnSquareContent.UNKNOWN);
+//        }
+//        else if(direction == Direction.SOUTHWEST) // MOVING TO POSITION 5 IN THE EXISTING MODEL
+//        {
+//            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
+//            newModel.set(0, surroundingSquares.get(6));
+//            newModel.set(2, surroundingSquares.get(4));
+//
+//            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
+//            newModel.set(1, LawnSquareContent.EMPTY);
+//
+//            // SET THE VALUES OF THE UNKNOWN SQUARES
+//            newModel.set(3, LawnSquareContent.UNKNOWN);
+//            newModel.set(4, LawnSquareContent.UNKNOWN);
+//            newModel.set(5, LawnSquareContent.UNKNOWN);
+//            newModel.set(6, LawnSquareContent.UNKNOWN);
+//            newModel.set(7, LawnSquareContent.UNKNOWN);
+//        }
+//        else if(direction == Direction.WEST) // MOVING TO POSITION 6 IN THE EXISTING MODEL
+//        {
+//            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
+//            newModel.set(0, surroundingSquares.get(7));
+//            newModel.set(1, surroundingSquares.get(0));
+//            newModel.set(3, surroundingSquares.get(4));
+//            newModel.set(4, surroundingSquares.get(5));
+//
+//            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
+//            newModel.set(2, LawnSquareContent.EMPTY);
+//
+//            // SET THE VALUES OF THE UNKNOWN SQUARES
+//            newModel.set(5, LawnSquareContent.UNKNOWN);
+//            newModel.set(6, LawnSquareContent.UNKNOWN);
+//            newModel.set(7, LawnSquareContent.UNKNOWN);
+//        }
+//        else if(direction == Direction.NORTHWEST) // MOVING TO POSITION 7 IN THE EXISTING MODEL
+//        {
+//            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
+//            newModel.set(2, surroundingSquares.get(0));
+//            newModel.set(4, surroundingSquares.get(6));
+//
+//            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
+//            newModel.set(3, LawnSquareContent.EMPTY);
+//
+//            // SET THE VALUES OF THE UNKNOWN SQUARES
+//            newModel.set(0, LawnSquareContent.UNKNOWN);
+//            newModel.set(1, LawnSquareContent.UNKNOWN);
+//            newModel.set(5, LawnSquareContent.UNKNOWN);
+//            newModel.set(6, LawnSquareContent.UNKNOWN);
+//            newModel.set(7, LawnSquareContent.UNKNOWN);
+//        }
+//        else{
+//            // SHOULD NEVER REACH THIS BECAUSE ALL DIRECTIONS ARE COVERED
+//            throw new RuntimeException("[UPDATE MODEL ERROR] :: updateSurroundingSquaresAfterMove - Invalid Direction");
+//        }
 
-        List<LawnSquareContent> surroundingSquares = mower.getSurroundingSquares();
-
-        List<LawnSquareContent> newModel = new ArrayList<>(Collections.nCopies(8, null));
-
-        if(direction == Direction.NORTH) // MOVING TO POSITION 0 IN THE EXISTING MODEL
-        {
-            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
-            newModel.set(2, surroundingSquares.get(1));
-            newModel.set(3, surroundingSquares.get(2));
-            newModel.set(5, surroundingSquares.get(6));
-            newModel.set(6, surroundingSquares.get(7));
-
-            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
-            newModel.set(4, LawnSquareContent.EMPTY);
-
-            // SET THE VALUES OF THE UNKNOWN SQUARES
-            newModel.set(0, LawnSquareContent.UNKNOWN);
-            newModel.set(1, LawnSquareContent.UNKNOWN);
-            newModel.set(7, LawnSquareContent.UNKNOWN);
-        }
-        else if(direction == Direction.NORTHEAST) // MOVING TO POSITION 1 IN THE EXISTING MODEL
-        {
-            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
-            newModel.set(4, surroundingSquares.get(2));
-            newModel.set(6, surroundingSquares.get(0));
-
-            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
-            newModel.set(5, LawnSquareContent.EMPTY);
-
-            // SET THE VALUES OF THE UNKNOWN SQUARES
-            newModel.set(0, LawnSquareContent.UNKNOWN);
-            newModel.set(1, LawnSquareContent.UNKNOWN);
-            newModel.set(2, LawnSquareContent.UNKNOWN);
-            newModel.set(3, LawnSquareContent.UNKNOWN);
-            newModel.set(7, LawnSquareContent.UNKNOWN);
-        }
-        else if(direction == Direction.EAST) // MOVING TO POSITION 2 IN THE EXISTING MODEL
-        {
-            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
-            newModel.set(0, surroundingSquares.get(1));
-            newModel.set(4, surroundingSquares.get(3));
-            newModel.set(5, surroundingSquares.get(4));
-            newModel.set(7, surroundingSquares.get(0));
-
-            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
-            newModel.set(6, LawnSquareContent.EMPTY);
-
-            // SET THE VALUES OF THE UNKNOWN SQUARES
-            newModel.set(1, LawnSquareContent.UNKNOWN);
-            newModel.set(2, LawnSquareContent.UNKNOWN);
-            newModel.set(3, LawnSquareContent.UNKNOWN);
-        }
-        else if(direction == Direction.SOUTHEAST) // MOVING TO POSITION 3 IN THE EXISTING MODEL
-        {
-            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
-            newModel.set(0, surroundingSquares.get(2));
-            newModel.set(6, surroundingSquares.get(4));
-
-            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
-            newModel.set(7, LawnSquareContent.EMPTY);
-
-            // SET THE VALUES OF THE UNKNOWN SQUARES
-            newModel.set(1, LawnSquareContent.UNKNOWN);
-            newModel.set(2, LawnSquareContent.UNKNOWN);
-            newModel.set(3, LawnSquareContent.UNKNOWN);
-            newModel.set(4, LawnSquareContent.UNKNOWN);
-            newModel.set(5, LawnSquareContent.UNKNOWN);
-        }
-        else if(direction == Direction.SOUTH) // MOVING TO POSITION 4 IN THE EXISTING MODEL
-        {
-            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
-            newModel.set(1, surroundingSquares.get(2));
-            newModel.set(2, surroundingSquares.get(3));
-            newModel.set(6, surroundingSquares.get(5));
-            newModel.set(7, surroundingSquares.get(6));
-
-            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
-            newModel.set(0, LawnSquareContent.EMPTY);
-
-            // SET THE VALUES OF THE UNKNOWN SQUARES
-            newModel.set(3, LawnSquareContent.UNKNOWN);
-            newModel.set(4, LawnSquareContent.UNKNOWN);
-            newModel.set(5, LawnSquareContent.UNKNOWN);
-        }
-        else if(direction == Direction.SOUTHWEST) // MOVING TO POSITION 5 IN THE EXISTING MODEL
-        {
-            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
-            newModel.set(0, surroundingSquares.get(6));
-            newModel.set(2, surroundingSquares.get(4));
-
-            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
-            newModel.set(1, LawnSquareContent.EMPTY);
-
-            // SET THE VALUES OF THE UNKNOWN SQUARES
-            newModel.set(3, LawnSquareContent.UNKNOWN);
-            newModel.set(4, LawnSquareContent.UNKNOWN);
-            newModel.set(5, LawnSquareContent.UNKNOWN);
-            newModel.set(6, LawnSquareContent.UNKNOWN);
-            newModel.set(7, LawnSquareContent.UNKNOWN);
-        }
-        else if(direction == Direction.WEST) // MOVING TO POSITION 6 IN THE EXISTING MODEL
-        {
-            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
-            newModel.set(0, surroundingSquares.get(7));
-            newModel.set(1, surroundingSquares.get(0));
-            newModel.set(3, surroundingSquares.get(4));
-            newModel.set(4, surroundingSquares.get(5));
-
-            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
-            newModel.set(2, LawnSquareContent.EMPTY);
-
-            // SET THE VALUES OF THE UNKNOWN SQUARES
-            newModel.set(5, LawnSquareContent.UNKNOWN);
-            newModel.set(6, LawnSquareContent.UNKNOWN);
-            newModel.set(7, LawnSquareContent.UNKNOWN);
-        }
-        else if(direction == Direction.NORTHWEST) // MOVING TO POSITION 7 IN THE EXISTING MODEL
-        {
-            // CONVERT THE EXISTING SQUARES TO THEIR NEW POSITION IN THE MODEL
-            newModel.set(2, surroundingSquares.get(0));
-            newModel.set(4, surroundingSquares.get(6));
-
-            // SET THE VALUE OF THE SQUARE THE MOWER MOVED FROM TO EMPTY
-            newModel.set(3, LawnSquareContent.EMPTY);
-
-            // SET THE VALUES OF THE UNKNOWN SQUARES
-            newModel.set(0, LawnSquareContent.UNKNOWN);
-            newModel.set(1, LawnSquareContent.UNKNOWN);
-            newModel.set(5, LawnSquareContent.UNKNOWN);
-            newModel.set(6, LawnSquareContent.UNKNOWN);
-            newModel.set(7, LawnSquareContent.UNKNOWN);
-        }
-        else{
-            // SHOULD NEVER REACH THIS BECAUSE ALL DIRECTIONS ARE COVERED
-            throw new RuntimeException("[UPDATE MODEL ERROR] :: updateSurroundingSquaresAfterMove - Invalid Direction");
-        }
-
-        mower.setSurroundingSquares(newModel);
+        mower.setSurroundingSquares(mapModel.getSurroundingSquares(mower));
     }
 
     /**
@@ -690,6 +732,21 @@ public class MowerService
             nextMove.getMower().setCurrentXCoordinate(Integer.MIN_VALUE);
             nextMove.getMower().setCurrentYCoordinate(Integer.MIN_VALUE);
         }
+    }
+
+    /**
+     * Updates the map of mower knowledge in the map model
+     *
+     * @param move - The move that is occurring
+     */
+    private void updateCentralMap(MowerMove move)
+    {
+        mapModel.updateLawnSquareContent(lawnService.getLawnSquareContentByCoordinates(
+                move.getCurrentXCoordinate(), move.getCurrentYCoordinate()),
+                move.getCurrentXCoordinate(), move.getCurrentYCoordinate());
+        mapModel.updateLawnSquareContent(lawnService.getLawnSquareContentByCoordinates(
+                move.getNewXCoordinate(), move.getNewYCoordinate()),
+                move.getNewXCoordinate(), move.getNewYCoordinate());
     }
 
     /**

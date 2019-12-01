@@ -1,6 +1,7 @@
 package com.osmowsis.osmowsisfinalproject.service;
 
 import com.osmowsis.osmowsisfinalproject.constant.LawnSquareContent;
+import com.osmowsis.osmowsisfinalproject.model.MapModel;
 import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
 
 import com.osmowsis.osmowsisfinalproject.pojo.Coordinate;
@@ -18,6 +19,7 @@ public class GopherService
     // FIELDS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private final SimulationDataModel simulationDataModel;
+    private final MapModel mapModel;
     private final LawnService lawnService;
     private final MowerService mowerService;
 
@@ -28,12 +30,14 @@ public class GopherService
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Autowired
     public GopherService(final SimulationDataModel simulationDataModel,
+                         final MapModel mapModel,
                          final LawnService lawnService,
                          final MowerService mowerService)
     {
         this.simulationDataModel = simulationDataModel;
         this.lawnService = lawnService;
         this.mowerService = mowerService;
+        this.mapModel = mapModel;
     }
 
 
@@ -68,7 +72,7 @@ public class GopherService
 
             String consoleText = getGopherMoveText(gopher, nextCoord)
                     + "\n\nGopher " + (gopher.getGopherNumber() + 1)
-                    + " is destroying Mower " + (collisionMower.getMowerNumber() + 1);
+                    + " destroyed Mower " + (collisionMower.getMowerNumber() + 1);
 
             simulationDataModel.updateConsoleText(consoleText, true);
 
@@ -88,7 +92,7 @@ public class GopherService
 
             String consoleText = getGopherMoveText(gopher, nextCoord)
                     + "\n\nGopher " + (gopher.getGopherNumber() + 1)
-                    + " is destroying Mower " + (collisionMower.getMowerNumber() + 1);
+                    + " destroyed Mower " + (collisionMower.getMowerNumber() + 1);
 
             simulationDataModel.updateConsoleText(consoleText, true);
 
@@ -149,7 +153,7 @@ public class GopherService
             if (!mower.isDisabled()) {
                 Coordinate mowerCoord = new Coordinate(mower.getCurrentXCoordinate(), mower.getCurrentYCoordinate());
                 Coordinate gopherCoord = new Coordinate(gopher.getXCoordinate(), gopher.getYCoordinate());
-                int distance = calculateDistance(mowerCoord, gopherCoord);
+                int distance = mapModel.calculateDistance(mowerCoord, gopherCoord);
                 if (distance < shortestDistance) {
                     shortestDistance = distance;
                     nearestMower = mower;
@@ -199,55 +203,6 @@ public class GopherService
             else {
                 //EAST
                 return new Coordinate(gopher.getXCoordinate()+1, gopher.getYCoordinate());
-            }
-        }
-    }
-
-    private int calculateDistance(Coordinate mowerCoord, Coordinate gopherCoord) {
-        if (mowerCoord.equals(gopherCoord)) return 0;
-
-        if (mowerCoord.getX() > gopherCoord.getX() && mowerCoord.getY() >gopherCoord.getY()){
-            //NORTHEAST
-            Coordinate newCoord = new Coordinate(gopherCoord.getX()+1, gopherCoord.getY()+1);
-            return calculateDistance(mowerCoord, newCoord) + 1;
-        }
-        else if (mowerCoord.getX() < gopherCoord.getX() && mowerCoord.getY() >gopherCoord.getY()) {
-            //NORTHWEST
-            Coordinate newCoord = new Coordinate(gopherCoord.getX()-1, gopherCoord.getY()+1);
-            return calculateDistance(mowerCoord, newCoord) + 1;
-        }
-        else if(mowerCoord.getX() < gopherCoord.getX() && mowerCoord.getY() < gopherCoord.getY()){
-            //SOUTHWEST
-            Coordinate newCoord = new Coordinate(gopherCoord.getX()-1, gopherCoord.getY()-1);
-            return calculateDistance(mowerCoord, newCoord) + 1;
-        }
-        else if (mowerCoord.getX() > gopherCoord.getX() && mowerCoord.getY() < gopherCoord.getY()){
-            //SOUTHEAST
-            Coordinate newCoord = new Coordinate(gopherCoord.getX()+1, gopherCoord.getY()-1);
-            return calculateDistance(mowerCoord, newCoord) + 1;
-        }
-        else if (mowerCoord.getX() == gopherCoord.getX()){
-            if (mowerCoord.getY() < gopherCoord.getY()){
-                //SOUTH
-                Coordinate newCoord = new Coordinate(gopherCoord.getX(), gopherCoord.getY()-1);
-                return calculateDistance(mowerCoord, newCoord) + 1;
-            }
-            else {
-                //NORTH
-                Coordinate newCoord = new Coordinate(gopherCoord.getX(), gopherCoord.getY()+1);
-                return calculateDistance(mowerCoord, newCoord) + 1;
-            }
-        }
-        else {
-            if (mowerCoord.getX() < gopherCoord.getX()){
-                //WEST
-                Coordinate newCoord = new Coordinate(gopherCoord.getX()-1, gopherCoord.getY());
-                return calculateDistance(mowerCoord, newCoord) + 1;
-            }
-            else {
-                //EAST
-                Coordinate newCoord = new Coordinate(gopherCoord.getX()+1, gopherCoord.getY());
-                return calculateDistance(mowerCoord, newCoord) + 1;
             }
         }
     }

@@ -12,6 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -29,6 +30,8 @@ public class SimulationDataModel implements BaseDataModel
     // FIELDS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private static final String STARTING_CONSOLE_MSG = "Click the start button to begin";
+
+    private final MapModel mapModel;
 
     private SimpleIntegerProperty lawnXDimension;
     private SimpleIntegerProperty lawnYDimension;
@@ -63,8 +66,11 @@ public class SimulationDataModel implements BaseDataModel
 
     // CONSTRUCTORS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public SimulationDataModel()
+    @Autowired
+    public SimulationDataModel(final MapModel mapModel)
     {
+        this.mapModel = mapModel;
+
         // SET DEFAULT VALUES
         resetDataModel();
     }
@@ -257,8 +263,6 @@ public class SimulationDataModel implements BaseDataModel
                                    final Direction startingDirection,
                                    final boolean strategic)
     {
-        List<LawnSquareContent> surroundingSquares = new ArrayList<>(Collections.nCopies(8, LawnSquareContent.UNKNOWN));
-
         Mower mower = new Mower();
         mower.setMowerNumber(mowers.size());
         mower.setCurrentDirection(startingDirection);
@@ -267,7 +271,9 @@ public class SimulationDataModel implements BaseDataModel
         mower.setCurrentEnergy(getStartingMowerEnergy());
         mower.setCurrentXCoordinate(xCoordinate);
         mower.setCurrentYCoordinate(yCoordinate);
-        mower.setSurroundingSquares(surroundingSquares);
+        mower.setSurroundingSquares(mapModel.getSurroundingSquares(mower));
+
+        mapModel.addMower(mower);
 
         mowers.add(mower);
         mowerQueue.addLast(mower);
@@ -369,7 +375,11 @@ public class SimulationDataModel implements BaseDataModel
         {
             for(int j = 0; j < y; j++)
             {
+                // THE SIMULATION DATA MODEL SHOULD CONTAIN THE TRUE INFO SO DEFAULT TO GRASS
                 lawnSquares.add(new LawnSquare(i, j, LawnSquareContent.GRASS));
+
+                // MAP MODEL SHOULD ONLY CONTAIN WHAT THE MOWERS KNOW SO SET THE SQUARES TO UNKNOWN
+                mapModel.getLawnSquares().add(new LawnSquare(i, j, LawnSquareContent.UNKNOWN));
             }
         }
     }
