@@ -47,6 +47,8 @@ public class SidebarController implements Initializable
     private final LawnGridController lawnGridController;
     private final StageManager stageManager;
     private final SimulationService simulationService;
+    private final ResultsDialogController resultsDialogController;
+    private final AppContainerController appContainerController;
 
     @FXML
     private FontAwesomeIconView simulationDetailsCollapsibleIcon;
@@ -111,12 +113,16 @@ public class SidebarController implements Initializable
     public SidebarController(final SimulationDataModel simulationDataModel,
                              final LawnGridController lawnGridController,
                              final SimulationService simulationService,
+                             final ResultsDialogController resultsDialogController,
+                             final AppContainerController appContainerController,
                              @Lazy final StageManager stageManager)
     {
         this.simulationDataModel = simulationDataModel;
         this.lawnGridController = lawnGridController;
         this.stageManager = stageManager;
         this.simulationService = simulationService;
+        this.resultsDialogController = resultsDialogController;
+        this.appContainerController = appContainerController;
 
         mowerControllerMap = new HashMap<>();
         gopherControllerMap = new HashMap<>();
@@ -240,6 +246,8 @@ public class SidebarController implements Initializable
     public void handleStopBtnClick()
     {
         log.info("STOPPING THE SIMULATION");
+        resultsDialogController.getResultsDialog().setDialogContainer(appContainerController.getAppContainer());
+        resultsDialogController.getResultsDialog().show();
 
         // TODO: CHANGE THE VIEW HERE TO GET THE FINAL VIEW AND DISABLE STUFF IN THE SIDEBAR
 

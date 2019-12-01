@@ -1,0 +1,46 @@
+/*.dialog-container{*/
+/*    -fx-background-color: #2C2C37;*/
+/*}*/
+
+.logo-icon{
+    -fx-fill: #2F5F00;
+}
+
+.separator .line{
+    -fx-border-color: #FEFDAF;
+    -fx-border-width: 1px;
+}
+
+.main-text{
+    -fx-text-fill: #b1b3b2;
+}
+
+.alt-text{
+    -fx-text-fill: #FEFDAF;
+}
+
+/* COMMON BUTTONS */
+.main-btn{
+    -fx-background-color: transparent;
+    -fx-background-radius: 10px;
+    -fx-border-width: 2px;
+    -fx-border-color: #FEFDAF;
+    -fx-border-radius: 10px;
+    -fx-text-fill: #B1B3B2;
+    -fx-font-size: 18px;
+}
+
+/* MOST ICONS */
+.main-icon{
+    -fx-fill: #FEFDAF;
+}
+
+
+/* DIALOG BACKGROUND */
+.jfx-dialog-overlay-pane .jfx-dialog-layout{
+    -fx-background-color: #2C2C37;
+}
+
+.jfx-dialog-overlay-pane {
+    -fx-background-color: rgba(13, 13, 13, 0.7);
+}

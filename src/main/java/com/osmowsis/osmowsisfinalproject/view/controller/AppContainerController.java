@@ -1,5 +1,8 @@
 package com.osmowsis.osmowsisfinalproject.view.controller;
 
+import javafx.fxml.FXML;
+import javafx.scene.layout.StackPane;
+import lombok.Getter;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -17,5 +20,9 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class AppContainerController
 {
-
+    // FIELDS
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @FXML
+    @Getter
+    private StackPane appContainer;
 }

@@ -9,11 +9,12 @@
     <!-- ______________________________________________________________________________-->
     <!-- INCLUDE ANY DIALOG PANES THAT WILL NEED TO BE DISPLAYED AS A MODAL BELOW HERE -->
     <!-- ______________________________________________________________________________-->
+    <fx:include source="components/dialog/ResultsDialog.fxml" />
 
     <!-- _______________________________________-->
     <!-- ANCHOR PANE FOR THE WHOLE APPLICATION  -->
     <!-- _______________________________________-->
-    <AnchorPane fx:id="appAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0">
+    <AnchorPane fx:id="appAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #2C2C37">
         <children>
             <!-- ______________________________-->
             <!-- LEFT HAND NAVIGATION SIDE BAR -->
