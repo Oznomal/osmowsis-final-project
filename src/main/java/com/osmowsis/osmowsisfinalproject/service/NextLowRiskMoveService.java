@@ -3,6 +3,7 @@ package com.osmowsis.osmowsisfinalproject.service;
 import com.osmowsis.osmowsisfinalproject.constant.Direction;
 import com.osmowsis.osmowsisfinalproject.constant.LawnSquareContent;
 import com.osmowsis.osmowsisfinalproject.constant.MowerMovementType;
+import com.osmowsis.osmowsisfinalproject.model.CentralMowerMap;
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
 import com.osmowsis.osmowsisfinalproject.pojo.MowerMove;
 import com.osmowsis.osmowsisfinalproject.service.base.NextMowerMoveService;

@@ -161,5 +161,11 @@ public class CentralMowerMap {
         }
     }
 
+    public static List<Coordinate> getGopherCoords() {
+        return gopherCoords;
+    }
 
+    public static void setGopherCoords(List<Coordinate> gopherCoords) {
+        CentralMowerMap.gopherCoords = gopherCoords;
+    }
 }

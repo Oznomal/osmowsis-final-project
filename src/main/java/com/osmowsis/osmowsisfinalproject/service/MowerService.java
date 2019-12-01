@@ -500,8 +500,22 @@ public class MowerService
      */
     private void preformLScan(final Mower mower)
     {
-        // TODO: IMPLEMENT THE L SCAN FUNCTIONALITY
+        final int x = mower.getCurrentXCoordinate();
+        final int y = mower.getCurrentYCoordinate();
+        final Direction d = mower.getCurrentDirection();
+        ArrayList<LawnSquareContent> lawnSquareContents = new ArrayList<LawnSquareContent>();
+        int curX=x;
+        int curY=y;
+        while (true){
+            curX = curX + d.getxIncrement();
+            curY =curY + d.getyIncrement();
+            LawnSquareContent lc = lawnService.getLawnSquareContentByCoordinates(curX, curY);
+            CentralMowerMap.updateLawnSquareContent(lc, curX, curY);
+            if(lc.equals(LawnSquareContent.FENCE)){
+                break;
+            }
 
+        }
         mower.setTurnsSinceLastScan(0);
     }
 
