@@ -26,7 +26,6 @@ public class MowerService
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private final SimulationDataModel simulationDataModel;
     private final LawnService lawnService;
-    private final GopherService gopherService;
     private final NextMowerMoveService lowRiskMoveService;
     private final NextMowerMoveService medRiskMoveService;
     private final NextMowerMoveService highRiskMoveService;
@@ -41,7 +40,6 @@ public class MowerService
                         final LawnService lawnService,
                         final SimulationRiskProfileService simulationRiskProfileService,
                         final SidebarController sidebarController,
-                        final GopherService gopherService,
                         @Qualifier("lowRiskMoveService") final NextMowerMoveService lowRiskMoveService,
                         @Qualifier("lowRiskMoveService") final NextMowerMoveService medRiskMoveService,
                         @Qualifier("highRiskMoveService") final NextMowerMoveService highRiskMoveService)
@@ -53,7 +51,6 @@ public class MowerService
         this.highRiskMoveService = highRiskMoveService;
         this.simulationRiskProfileService = simulationRiskProfileService;
         this.sidebarController = sidebarController;
-        this.gopherService = gopherService;
     }
 
     // PUBLIC METHODS
@@ -101,6 +98,21 @@ public class MowerService
         }
 
         mower.setTurnTaken(true);
+    }
+
+    /**
+     * Removes the mower in the new square and sets the coordinates to min values so the mower is removed from the map
+     *
+     * @param mower - The mower to remove
+     */
+    public void removeMowerInNewSquare(Mower mower)
+    {
+        mower.setDisabled(true);
+
+        mower.setCurrentXCoordinate(Integer.MIN_VALUE);
+        mower.setCurrentYCoordinate(Integer.MIN_VALUE);
+
+        decrementActiveMowers();
     }
 
     /**
@@ -246,7 +258,7 @@ public class MowerService
     {
         if(!isMowerMoveOnChargingSquare(move))
         {
-            // TODO: TAKE AWAY THE ENERGY FOR THE MOVE
+            move.getMower().setCurrentEnergy(move.getMower().getCurrentEnergy() - MowerMovementType.STEER.getEnergyCost());
         }
     }
 
@@ -259,7 +271,7 @@ public class MowerService
     {
         if(!isMowerMoveOnChargingSquare(move))
         {
-            // TODO: TAKE AWAY THE ENERGY FOR THE MOVE
+            move.getMower().setCurrentEnergy(move.getMower().getCurrentEnergy() - MowerMovementType.L_SCAN.getEnergyCost());
         }
     }
 
@@ -272,7 +284,7 @@ public class MowerService
     {
         if(!isMowerMoveOnChargingSquare(move))
         {
-            // TODO: TAKE AWAY THE ENERGY FOR THE MOVE
+            move.getMower().setCurrentEnergy(move.getMower().getCurrentEnergy() - MowerMovementType.C_SCAN.getEnergyCost());
         }
     }
 
@@ -308,8 +320,8 @@ public class MowerService
             // WHEN THE MOWER GOES OVER GOPHER, IT GETS CHEWED BUT STILL CUTS THE GRASS FIRST
             if(newContent == LawnSquareContent.GRASS_GOPHER)
             {
-                final Gopher gopher =
-                        gopherService.getGopherByCoordinates(newSquare.getXCoordinate(), newSquare.getYCoordinate());
+                final Gopher gopher = simulationDataModel.getGopherByCoordinates(
+                        newSquare.getXCoordinate(), newSquare.getYCoordinate());
 
                 sb.append("Gopher ")
                         .append((gopher.getGopherNumber() + 1))
@@ -322,7 +334,8 @@ public class MowerService
             }
             else if(newContent == LawnSquareContent.EMPTY_MOWER)
             {
-                Mower collisionMower = getMowerByCoordinates(newSquare.getXCoordinate(), newSquare.getXCoordinate());
+                Mower collisionMower =
+                        simulationDataModel.getMowerByCoordinates(newSquare.getXCoordinate(), newSquare.getXCoordinate());
 
                 removeMowerInNewSquare(collisionMower);
 
@@ -335,7 +348,8 @@ public class MowerService
             }
             else if(newContent == LawnSquareContent.EMPTY_MOWER_CHARGER)
             {
-                Mower collisionMower = getMowerByCoordinates(newSquare.getXCoordinate(), newSquare.getXCoordinate());
+                Mower collisionMower =
+                        simulationDataModel.getMowerByCoordinates(newSquare.getXCoordinate(), newSquare.getXCoordinate());
 
                 removeMowerInNewSquare(collisionMower);
 
@@ -370,12 +384,13 @@ public class MowerService
         {
             newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_MOWER_CHARGER);
 
-            sb.append("MOWER ")
+            sb.append("Mower ")
                     .append((move.getMower().getMowerNumber() + 1))
                     .append(" is now recharged!");
 
             recharged = true;
-            // TODO: NEED TO IMPLEMENT CHARGING STUFF HERE, UPDATE THE MOWERS BATTERY BACK TO THE STARTING AMOUNT
+
+            move.getMower().setCurrentEnergy(simulationDataModel.getStartingMowerEnergy());
         }
         else{
             throw new RuntimeException("[UPDATE ERROR] :: updateSimStateForMowerMove - Invalid new content scenario");
@@ -389,7 +404,7 @@ public class MowerService
 
         if(!recharged)
         {
-            // TODO: TAKE AWAY THE ENERGY FOR THE MOVE
+            move.getMower().setCurrentEnergy(move.getMower().getCurrentEnergy() - MowerMovementType.MOVE.getEnergyCost());
         }
     }
 
@@ -406,42 +421,6 @@ public class MowerService
                 move.getCurrentXCoordinate(), move.getCurrentYCoordinate());
 
         return currentContent == LawnSquareContent.EMPTY_MOWER_CHARGER;
-    }
-
-    /**
-     * Removes the mower in the new square
-     *
-     * @param mower - The mower to remove
-     */
-    private void removeMowerInNewSquare(Mower mower)
-    {
-        mower.setDisabled(true);
-
-        mower.setCurrentXCoordinate(Integer.MIN_VALUE);
-        mower.setCurrentYCoordinate(Integer.MIN_VALUE);
-
-        decrementActiveMowers();
-    }
-
-    /**
-     * Gets a mower by its x and y coordinates, throws exception if not found
-     *
-     * @param x - The x coordinate
-     * @param y - The y coordinate
-     *
-     * @return - The mower at the coordinates
-     */
-    private Mower getMowerByCoordinates(final int x, final int y)
-    {
-        for(Mower mower : simulationDataModel.getMowers())
-        {
-            if(mower.getCurrentXCoordinate() == x && mower.getCurrentYCoordinate() == y)
-            {
-                return mower;
-            }
-        }
-
-        throw new RuntimeException("[INVALID MOWER] :: getMowerByCoordinates - No mower at coordinates");
     }
 
     /**
