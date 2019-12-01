@@ -3,11 +3,14 @@ package com.osmowsis.osmowsisfinalproject.service;
 import com.osmowsis.osmowsisfinalproject.constant.Direction;
 import com.osmowsis.osmowsisfinalproject.constant.LawnSquareContent;
 import com.osmowsis.osmowsisfinalproject.constant.MowerMovementType;
+import com.osmowsis.osmowsisfinalproject.model.MapModel;
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
 import com.osmowsis.osmowsisfinalproject.pojo.MowerMove;
 import com.osmowsis.osmowsisfinalproject.service.base.NextMowerMoveService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
 
 import java.util.List;
 
@@ -25,6 +28,14 @@ class NextHighRiskMoveService extends NextMowerMoveService
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private static final int MAX_UNKNOWN_SQUARE_COUNT = 5;
     private static final int MAX_TURNS_SINCE_LAST_SCAN = 3;
+
+    // CONSTRUCTORS
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Autowired
+    public NextHighRiskMoveService(final MapModel mapModel)
+    {
+        super(mapModel);
+    }
 
     // PACKAGE METHODS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +100,7 @@ class NextHighRiskMoveService extends NextMowerMoveService
         final int currXCoor = mower.getCurrentXCoordinate();
         final int currYCoor = mower.getCurrentYCoordinate();
 
-        final List<List<Integer>> possibleMovesList = getPossibleMovesByRanking(surroundingSquares);
+        final List<List<Integer>> possibleMovesList = getPossibleMovesByRanking(mower);
         final List<Integer> medRiskMoves   = possibleMovesList.get(2);
         final List<Integer> preferredMoves = possibleMovesList.get(3);
 
