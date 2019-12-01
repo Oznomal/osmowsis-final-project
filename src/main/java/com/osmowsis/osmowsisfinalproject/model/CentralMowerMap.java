@@ -168,4 +168,8 @@ public class CentralMowerMap {
     public static void setGopherCoords(List<Coordinate> gopherCoords) {
         CentralMowerMap.gopherCoords = gopherCoords;
     }
+
+//    public static void updateMowerLocation(LawnSquare lawnSquare){
+//
+//    }
 }

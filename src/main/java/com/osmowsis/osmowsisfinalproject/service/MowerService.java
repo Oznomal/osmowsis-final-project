@@ -65,7 +65,7 @@ public class MowerService
         {
             throw new RuntimeException("[MOWER MOVE ERROR] :: makeMove - Invalid Mower");
         }
-
+        mower.setSurroundingSquares(CentralMowerMap.getSurroundingSquares(mower));
         final MowerMove nextMove = determineMove(mower);
 
         log.info("The next move is: {}", nextMove);
@@ -165,23 +165,24 @@ public class MowerService
         final SimulationRiskProfile riskProfile = simulationRiskProfileService.getCurrentSimulationRiskProfile();
 
         MowerMove response;
+        response = lowRiskMoveService.getNextMowerMove(mower);
 
-        if(riskProfile == SimulationRiskProfile.LOW)
-        {
-            response = lowRiskMoveService.getNextMowerMove(mower);
-        }
-        else if(riskProfile == SimulationRiskProfile.MEDIUM)
-        {
-            response = medRiskMoveService.getNextMowerMove(mower);
-        }
-        else if(riskProfile == SimulationRiskProfile.HIGH)
-        {
-            response = highRiskMoveService.getNextMowerMove(mower);
-        }
-        else{
-            // THIS SHOULD NEVER BE REACHED BECAUSE RISK PROFILE SHOULD ALWAYS BE SET
-            throw new RuntimeException("[RISK PROFILE ERROR] :: determineMove - The risk profile is invalid");
-        }
+//        if(riskProfile == SimulationRiskProfile.LOW)
+//        {
+//            response = lowRiskMoveService.getNextMowerMove(mower);
+//        }
+//        else if(riskProfile == SimulationRiskProfile.MEDIUM)
+//        {
+//            response = medRiskMoveService.getNextMowerMove(mower);
+//        }
+//        else if(riskProfile == SimulationRiskProfile.HIGH)
+//        {
+//            response = highRiskMoveService.getNextMowerMove(mower);
+//        }
+//        else{
+//            // THIS SHOULD NEVER BE REACHED BECAUSE RISK PROFILE SHOULD ALWAYS BE SET
+//            throw new RuntimeException("[RISK PROFILE ERROR] :: determineMove - The risk profile is invalid");
+//        }
 
         return response;
     }
@@ -333,6 +334,9 @@ public class MowerService
         // UPDATE THE SQUARE THE MOWER WAS IN SINCE THE MOWER IS MOVING TO A NEW SQUARE
         oldSquare.setLawnSquareContent(
                 lawnService.getNewLawnContentForDepartingMower(oldSquare.getLawnSquareContent()));
+        //Update Mower Map old Square
+        CentralMowerMap.updateLawnSquareContent(oldSquare.getLawnSquareContent(),
+                oldSquare.getXCoordinate(), oldSquare.getYCoordinate());
 
         boolean recharged = false;
 
@@ -379,6 +383,10 @@ public class MowerService
         else{
             throw new RuntimeException("[UPDATE ERROR] :: updateSimStateForMowerMove - Invalid new content scenario");
         }
+
+        //Update Mower Map New Square
+        CentralMowerMap.updateLawnSquareContent(newSquare.getLawnSquareContent(),
+                newSquare.getXCoordinate(), newSquare.getYCoordinate());
 
         if(!recharged)
         {
