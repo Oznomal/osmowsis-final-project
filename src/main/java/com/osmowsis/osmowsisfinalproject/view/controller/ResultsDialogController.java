@@ -107,8 +107,6 @@ public class ResultsDialogController implements Initializable
      */
     public void handleRestartBtnClick()
     {
-        fileService.writeResultsFile();
-
         simulationDataModel.resetDataModel();
 
         stageManager.switchScene(FXMLView.WELCOME);
@@ -119,8 +117,6 @@ public class ResultsDialogController implements Initializable
      */
     public void handleExitBtnClick()
     {
-        fileService.writeResultsFile();
-
         simulationDataModel.resetDataModel();
 
         stageManager.closeMainStage();

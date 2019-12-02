@@ -31,6 +31,7 @@ public class SimulationService {
     private final SidebarController sidebarController;
     private final ResultsDialogController resultsDialogController;
     private final AppContainerController appContainerController;
+    private final FileService fileService;
 
     @Getter
     @Setter
@@ -47,7 +48,8 @@ public class SimulationService {
                              final LawnGridController lawnGridController,
                              final SidebarController sidebarController,
                              final ResultsDialogController resultsDialogController,
-                             final AppContainerController appContainerController)
+                             final AppContainerController appContainerController,
+                             final FileService fileService)
     {
         this.simulationDataModel = simulationDataModel;
         this.simulationRiskProfileService = simulationRiskProfileService;
@@ -57,6 +59,7 @@ public class SimulationService {
         this.sidebarController = sidebarController;
         this.resultsDialogController = resultsDialogController;
         this.appContainerController = appContainerController;
+        this.fileService = fileService;
     }
 
     // PUBLIC METHODS
@@ -132,6 +135,8 @@ public class SimulationService {
 
         if(isSimulationDone())
         {
+            fileService.writeResultsFile();
+
             resultsDialogController.getResultsDialog().setDialogContainer(appContainerController.getAppContainer());
             resultsDialogController.updateResults();
             resultsDialogController.getResultsDialog().show();
