@@ -70,6 +70,9 @@ public class SidebarMowerCellController
     @FXML
     private Label mowerPositionLabel;
 
+    @FXML
+    private HBox coordinateContainer;
+
     @Getter
     private Mower mower;
 
@@ -145,6 +148,19 @@ public class SidebarMowerCellController
     private void updateMowerName(final Mower mower)
     {
         mowerName.setText(CSS.MOWER_NAME_PREFIX + " " + (mower.getMowerNumber() + 1));
+
+        if(mower.isDisabled()
+                && !mowerName.getStyleClass().contains(CSS.DISABLED_MOWER_LABEL))
+        {
+            mowerName.getStyleClass().remove(CSS.ACTIVE_MOWER_LABEL);
+            mowerName.getStyleClass().add(CSS.DISABLED_MOWER_LABEL);
+        }
+        else if(!mower.isDisabled()
+                && !mowerName.getStyleClass().contains(CSS.ACTIVE_MOWER_LABEL))
+        {
+            mowerName.getStyleClass().remove(CSS.DISABLED_MOWER_LABEL);
+            mowerName.getStyleClass().add(CSS.ACTIVE_MOWER_LABEL);
+        }
     }
 
     /**
@@ -152,12 +168,13 @@ public class SidebarMowerCellController
      */
     private void updateSmartIcon(final Mower mower)
     {
-        if(mower.isStrategic() && !smartIcon.getStyleClass().contains(CSS.SMART_ICON_ACTIVE))
+        if(mower.isStrategic() && !mower.isDisabled() && !smartIcon.getStyleClass().contains(CSS.SMART_ICON_ACTIVE))
         {
             smartIcon.getStyleClass().remove(CSS.SMART_ICON_DISABLED);
             smartIcon.getStyleClass().add(CSS.SMART_ICON_ACTIVE);
         }
-        else if(!mower.isStrategic() && !smartIcon.getStyleClass().contains(CSS.SMART_ICON_DISABLED))
+        else if((!mower.isStrategic() && !smartIcon.getStyleClass().contains(CSS.SMART_ICON_DISABLED))
+                || mower.isDisabled())
         {
             smartIcon.getStyleClass().remove(CSS.SMART_ICON_ACTIVE);
             smartIcon.getStyleClass().add(CSS.SMART_ICON_DISABLED);
@@ -192,6 +209,17 @@ public class SidebarMowerCellController
         else{
             batteryIcon.setGlyphName(CSS.EMPTY_BATTERY_ICON_NAME);
         }
+
+        if(mower.isDisabled() && !batteryIcon.getStyleClass().contains(CSS.SMART_ICON_DISABLED))
+        {
+            batteryIcon.getStyleClass().remove(CSS.SMART_ICON_ACTIVE);
+            batteryIcon.getStyleClass().add(CSS.SMART_ICON_DISABLED);
+        }
+        else if(!mower.isDisabled() && !batteryIcon.getStyleClass().contains(CSS.SMART_ICON_ACTIVE))
+        {
+            batteryIcon.getStyleClass().remove(CSS.SMART_ICON_DISABLED);
+            batteryIcon.getStyleClass().add(CSS.SMART_ICON_ACTIVE);
+        }
     }
 
     /**
@@ -214,6 +242,19 @@ public class SidebarMowerCellController
     private void updateBatteryEnergyLabel(final Mower mower)
     {
         batteryEnergyLabel.setText(Integer.toString(mower.getCurrentEnergy()));
+
+        if(mower.isDisabled()
+                && !batteryEnergyLabel.getStyleClass().contains(CSS.DISABLED_MOWER_LABEL))
+        {
+            batteryEnergyLabel.getStyleClass().remove(CSS.ACTIVE_MOWER_LABEL);
+            batteryEnergyLabel.getStyleClass().add(CSS.DISABLED_MOWER_LABEL);
+        }
+        else if(!mower.isDisabled()
+                && !batteryEnergyLabel.getStyleClass().contains(CSS.ACTIVE_MOWER_LABEL))
+        {
+            batteryEnergyLabel.getStyleClass().remove(CSS.DISABLED_MOWER_LABEL);
+            batteryEnergyLabel.getStyleClass().add(CSS.ACTIVE_MOWER_LABEL);
+        }
     }
 
     /**
@@ -225,6 +266,31 @@ public class SidebarMowerCellController
     {
         directionAbbreviation.setText(mower.getCurrentDirection().getAbbreviation());
         directionIcon.setRotate(mower.getCurrentDirection().getIconAngle());
+
+        if(mower.isDisabled() && !directionIcon.getStyleClass().contains(CSS.SMART_ICON_DISABLED))
+        {
+            directionIcon.getStyleClass().remove(CSS.SMART_ICON_ACTIVE);
+            directionIcon.getStyleClass().add(CSS.SMART_ICON_DISABLED);
+        }
+        else if(!mower.isDisabled() && !directionIcon.getStyleClass().contains(CSS.SMART_ICON_ACTIVE))
+        {
+            directionIcon.getStyleClass().remove(CSS.SMART_ICON_DISABLED);
+            directionIcon.getStyleClass().add(CSS.SMART_ICON_ACTIVE);
+        }
+
+        if(mower.isDisabled()
+                && !directionAbbreviation.getStyleClass().contains(CSS.DISABLED_MOWER_LABEL))
+        {
+            directionAbbreviation.getStyleClass().remove(CSS.ACTIVE_MOWER_LABEL);
+            directionAbbreviation.getStyleClass().add(CSS.DISABLED_MOWER_LABEL);
+        }
+        else if(!mower.isDisabled()
+                && !directionAbbreviation.getStyleClass().contains(CSS.ACTIVE_MOWER_LABEL))
+        {
+            directionAbbreviation.getStyleClass().remove(CSS.DISABLED_MOWER_LABEL);
+            directionAbbreviation.getStyleClass().add(CSS.ACTIVE_MOWER_LABEL);
+        }
+
     }
 
     /**
@@ -244,5 +310,32 @@ public class SidebarMowerCellController
         else{
             mowerPositionLabel.setText(mower.getCurrentXCoordinate() + ", " + mower.getCurrentYCoordinate());
         }
+
+        if(mower.isDisabled()
+                && !mowerPositionLabel.getStyleClass().contains(CSS.DISABLED_MOWER_LABEL))
+        {
+            mowerPositionLabel.getStyleClass().remove(CSS.ACTIVE_MOWER_LABEL);
+            mowerPositionLabel.getStyleClass().add(CSS.DISABLED_MOWER_LABEL);
+        }
+        else if(!mower.isDisabled()
+                && !mowerPositionLabel.getStyleClass().contains(CSS.ACTIVE_MOWER_LABEL))
+        {
+            mowerPositionLabel.getStyleClass().remove(CSS.DISABLED_MOWER_LABEL);
+            mowerPositionLabel.getStyleClass().add(CSS.ACTIVE_MOWER_LABEL);
+        }
+
+        if(mower.isDisabled()
+                && !coordinateContainer.getStyleClass().contains(CSS.DISABLED_COORDINATE_CONTAINER))
+        {
+            coordinateContainer.getStyleClass().remove(CSS.ACTIVE_COORDINATRE_CONTAINER);
+            coordinateContainer.getStyleClass().add(CSS.DISABLED_COORDINATE_CONTAINER);
+        }
+        else if(!mower.isDisabled()
+                && !coordinateContainer.getStyleClass().contains(CSS.ACTIVE_COORDINATRE_CONTAINER))
+        {
+            mowerPositionLabel.getStyleClass().remove(CSS.DISABLED_COORDINATE_CONTAINER);
+            mowerPositionLabel.getStyleClass().add(CSS.ACTIVE_COORDINATRE_CONTAINER);
+        }
+
     }
 }

@@ -22,7 +22,7 @@
         <!-- ___________-->
         <!-- MOWER NAME -->
         <!-- ___________-->
-        <Label fx:id="mowerName" text="Mower" textFill="#b1b3b2">
+        <Label fx:id="mowerName" text="Mower">
             <font>
                 <Font name="Roboto Light" size="14.0" />
             </font>
@@ -45,7 +45,7 @@
             </HBox.margin>
         </FontAwesomeIconView>
 
-        <Label fx:id="batteryEnergyLabel" text="100" textFill="#b1b3b2">
+        <Label fx:id="batteryEnergyLabel" text="100">
             <font>
                 <Font name="Ebrima" size="13.0" />
             </font>
@@ -62,7 +62,7 @@
         <!-- __________________-->
         <!-- DIRECTION SECTION -->
         <!-- __________________-->
-        <Label fx:id="directionAbbreviation" text="N" textFill="#b1b3b2">
+        <Label fx:id="directionAbbreviation" text="N">
             <font>
                 <Font name="Roboto Light" size="14.0" />
             </font>
@@ -75,9 +75,9 @@
                 <Insets right="8.0" />
             </HBox.margin>
         </FontAwesomeIconView>
-        <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="18.0" styleClass="coordinate-container">
+        <HBox fx:id="coordinateContainer" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="18.0" styleClass="coordinate-container">
              <children>
-                <Label fx:id="mowerPositionLabel" styleClass="main-label" text="2, 3">
+                <Label fx:id="mowerPositionLabel" text="2, 3">
                    <padding>
                       <Insets left="5.0" right="5.0" />
                    </padding>

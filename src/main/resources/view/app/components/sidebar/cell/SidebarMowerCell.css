@@ -18,6 +18,14 @@
     -fx-fill: #272731;
 }
 
+.active-label{
+    -fx-text-fill: #b1b3b2;
+}
+
+.disabled-label{
+    -fx-fill: #272731;
+}
+
 .main-label{
     -fx-text-fill: #b1b3b2;
 }
@@ -27,4 +35,11 @@
     -fx-border-radius: 7px;
     -fx-border-width: 1px;
     -fx-border-color: #FEFDAF;
+}
+
+.coordinate-container-disabled{
+    -fx-background-color: transparent;
+    -fx-border-radius: 7px;
+    -fx-border-width: 1px;
+    -fx-border-color: #272731;
 }

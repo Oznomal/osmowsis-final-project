@@ -38,6 +38,10 @@ public final class CSS
 
     public static final String SMART_ICON_ACTIVE = "smart-active";
     public static final String SMART_ICON_DISABLED = "smart-disabled";
+    public static final String ACTIVE_MOWER_LABEL = "active-label";
+    public static final String DISABLED_MOWER_LABEL = "disabled-label";
+    public static final String ACTIVE_COORDINATRE_CONTAINER = "coordinate-container";
+    public static final String DISABLED_COORDINATE_CONTAINER = "coordinate-container-disabled";
 
     // CONSTRUCTOR
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
