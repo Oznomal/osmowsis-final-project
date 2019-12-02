@@ -18,6 +18,10 @@ public class GopherService
 {
     // FIELDS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private static final String RESULTS_GOPHER_PREFIX = "g";
+    private static final String RESULTS_OK = "ok";
+    private static final String RESULTS_CRASH = "crash";
+
     private final SimulationDataModel simulationDataModel;
     private final MapModel mapModel;
     private final LawnService lawnService;
@@ -58,6 +62,9 @@ public class GopherService
                     + "\n\nGopher " + (gopher.getGopherNumber() + 1)
                     + " destroyed Mower " + (collisionMower.getMowerNumber() + 1);
 
+            simulationDataModel.updateResultsFileContents(RESULTS_GOPHER_PREFIX + (gopher.getGopherNumber() + ",move"));
+            simulationDataModel.updateResultsFileContents(RESULTS_CRASH);
+
             simulationDataModel.updateConsoleText(consoleText, true);
 
             mowerService.removeMowerInNewSquare(collisionMower);
@@ -70,6 +77,9 @@ public class GopherService
             newSquare.setLawnSquareContent(LawnSquareContent.GRASS_GOPHER);
             updateGopherPosition(gopher, nextCoord);
             updateOldSquare(oldSquare);
+
+            simulationDataModel.updateResultsFileContents(RESULTS_GOPHER_PREFIX + (gopher.getGopherNumber() + ",move"));
+            simulationDataModel.updateResultsFileContents(RESULTS_OK);
         }
         else if (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_MOWER_CHARGER)){
             Mower collisionMower = simulationDataModel.getMowerByCoordinates(nextCoord.getX(), nextCoord.getY());
@@ -79,6 +89,9 @@ public class GopherService
                     + " destroyed Mower " + (collisionMower.getMowerNumber() + 1);
 
             simulationDataModel.updateConsoleText(consoleText, true);
+
+            simulationDataModel.updateResultsFileContents(RESULTS_GOPHER_PREFIX + (gopher.getGopherNumber() + ",move"));
+            simulationDataModel.updateResultsFileContents(RESULTS_CRASH);
 
             mowerService.removeMowerInNewSquare(collisionMower);
             newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER_CHARGER);
@@ -90,12 +103,18 @@ public class GopherService
             newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER);
             updateGopherPosition(gopher, nextCoord);
             updateOldSquare(oldSquare);
+
+            simulationDataModel.updateResultsFileContents(RESULTS_GOPHER_PREFIX + (gopher.getGopherNumber() + ",move"));
+            simulationDataModel.updateResultsFileContents(RESULTS_OK);
         }
         else if (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_CHARGER)){
             simulationDataModel.updateConsoleText(getGopherMoveText(gopher, nextCoord), true);
             newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER_CHARGER);
             updateGopherPosition(gopher, nextCoord);
             updateOldSquare(oldSquare);
+
+            simulationDataModel.updateResultsFileContents(RESULTS_GOPHER_PREFIX + (gopher.getGopherNumber() + ",move"));
+            simulationDataModel.updateResultsFileContents(RESULTS_OK);
         }
         else if ((newSquare.getLawnSquareContent().equals(LawnSquareContent.GRASS_GOPHER)
                 || (newSquare.getLawnSquareContent().equals(LawnSquareContent.EMPTY_GOPHER)
@@ -108,6 +127,9 @@ public class GopherService
                     + ") because it is occupied by Gopher " +  (occupyingGopher.getGopherNumber() + 1);
 
             simulationDataModel.updateConsoleText(text, true);
+
+            simulationDataModel.updateResultsFileContents(RESULTS_GOPHER_PREFIX + (gopher.getGopherNumber() + ",move"));
+            simulationDataModel.updateResultsFileContents(RESULTS_OK);
         }
     }
 

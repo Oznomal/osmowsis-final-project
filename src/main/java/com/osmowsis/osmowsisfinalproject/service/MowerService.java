@@ -20,6 +20,10 @@ public class MowerService
 {
     // FIELDS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private static final String RESULTS_MOWER_PREFIX = "m";
+    private static final String RESULTS_OK = "ok";
+    private static final String RESULTS_CRASH = "crash";
+
     private final SimulationDataModel simulationDataModel;
     private final MapModel mapModel;
     private final LawnService lawnService;
@@ -190,7 +194,7 @@ public class MowerService
         switch(move.getMowerMovementType())
         {
             case PASS:
-                // NO SIM STATE UPDATES FOR PASS NEED TO OCCUR
+                simulationDataModel.updateResultsFileContents(RESULTS_OK);
                 break;
 
             case STEER:
@@ -222,6 +226,8 @@ public class MowerService
      */
     private void updateSimForMowerSteer(final MowerMove move)
     {
+        simulationDataModel.updateResultsFileContents(RESULTS_OK);
+
         if(!isMowerMoveOnChargingSquare(move))
         {
             decrementEnergy(move, true);
@@ -235,6 +241,9 @@ public class MowerService
      */
     private void updateSimForMowerLScan(final MowerMove move)
     {
+        simulationDataModel.updateResultsFileContents(RESULTS_OK);
+
+
         if(!isMowerMoveOnChargingSquare(move))
         {
             decrementEnergy(move, true);
@@ -248,6 +257,8 @@ public class MowerService
      */
     private void updateSimForMowerCScan(final MowerMove move)
     {
+        simulationDataModel.updateResultsFileContents(RESULTS_OK);
+
         if(!isMowerMoveOnChargingSquare(move))
         {
             decrementEnergy(move, true);
@@ -299,6 +310,8 @@ public class MowerService
                         .append(" destroyed Mower ")
                         .append((move.getMower().getMowerNumber() + 1));
 
+                simulationDataModel.updateResultsFileContents(RESULTS_CRASH);
+
                 lawnService.incrementGrassCut();
 
                 newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_GOPHER);
@@ -315,6 +328,8 @@ public class MowerService
                         .append(" collided with Mower ")
                         .append((collisionMower.getMowerNumber() + 1));
 
+                simulationDataModel.updateResultsFileContents(RESULTS_CRASH);
+
                 newSquare.setLawnSquareContent(LawnSquareContent.EMPTY);
             }
             else if(newContent == LawnSquareContent.EMPTY_MOWER_CHARGER)
@@ -329,17 +344,23 @@ public class MowerService
                         .append(" collided with Mower ")
                         .append((collisionMower.getMowerNumber() + 1));
 
+                simulationDataModel.updateResultsFileContents(RESULTS_CRASH);
+
                 newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_CHARGER);
             }
             else{
                 sb.append("Mower ")
                         .append((move.getMower().getMowerNumber() + 1))
                         .append(" collided with a Fence");
+
+                simulationDataModel.updateResultsFileContents(RESULTS_CRASH);
             }
         }
         else if(newContent == LawnSquareContent.EMPTY)
         {
             newSquare.setLawnSquareContent(LawnSquareContent.EMPTY_MOWER);
+
+            simulationDataModel.updateResultsFileContents(RESULTS_OK);
         }
         else if(newContent == LawnSquareContent.GRASS)
         {
@@ -348,6 +369,8 @@ public class MowerService
             sb.append("Mower ")
                     .append((move.getMower().getMowerNumber() + 1))
                     .append(" successfully cut 1 square!");
+
+            simulationDataModel.updateResultsFileContents(RESULTS_OK);
 
             lawnService.incrementGrassCut();
         }
@@ -358,6 +381,8 @@ public class MowerService
             sb.append("Mower ")
                     .append((move.getMower().getMowerNumber() + 1))
                     .append(" is now recharged!");
+
+            simulationDataModel.updateResultsFileContents(RESULTS_OK);
 
             recharged = true;
 
@@ -747,6 +772,8 @@ public class MowerService
                     .append(",")
                     .append(mowerMove.getNewYCoordinate())
                     .append(")");
+
+            simulationDataModel.updateResultsFileContents(RESULTS_MOWER_PREFIX + (mowerMove.getMower().getMowerNumber()) + ",move");
         }
         else if(mowerMove.getMowerMovementType() == MowerMovementType.C_SCAN)
         {
@@ -758,6 +785,8 @@ public class MowerService
                     .append(",")
                     .append(mowerMove.getCurrentYCoordinate())
                     .append(")");
+
+            simulationDataModel.updateResultsFileContents(RESULTS_MOWER_PREFIX + (mowerMove.getMower().getMowerNumber()) + ",cscan");
         }
         else if(mowerMove.getMowerMovementType() == MowerMovementType.L_SCAN)
         {
@@ -769,6 +798,8 @@ public class MowerService
                     .append(",")
                     .append(mowerMove.getCurrentYCoordinate())
                     .append(")");
+
+            simulationDataModel.updateResultsFileContents(RESULTS_MOWER_PREFIX + (mowerMove.getMower().getMowerNumber()) + ",lscan");
         }
         else if(mowerMove.getMowerMovementType() == MowerMovementType.STEER)
         {
@@ -782,6 +813,10 @@ public class MowerService
                     .append(",")
                     .append(mowerMove.getCurrentYCoordinate())
                     .append(")");
+
+            simulationDataModel.updateResultsFileContents(RESULTS_MOWER_PREFIX + (mowerMove.getMower().getMowerNumber())
+                    + ",steer," + mowerMove.getDirection().name().toLowerCase().trim());
+
         }
         else if(mowerMove.getMowerMovementType() == MowerMovementType.PASS)
         {
@@ -793,6 +828,8 @@ public class MowerService
                     .append(",")
                     .append(mowerMove.getCurrentYCoordinate())
                     .append(")");
+
+            simulationDataModel.updateResultsFileContents(RESULTS_MOWER_PREFIX + (mowerMove.getMower().getMowerNumber()) + ",pass");
         }
 
         simulationDataModel.updateConsoleText(sb.toString(), true);
