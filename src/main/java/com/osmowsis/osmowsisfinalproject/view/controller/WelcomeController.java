@@ -2,7 +2,7 @@ package com.osmowsis.osmowsisfinalproject.view.controller;
 
 import com.osmowsis.osmowsisfinalproject.config.StageManager;
 import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
-import com.osmowsis.osmowsisfinalproject.service.FileParsingService;
+import com.osmowsis.osmowsisfinalproject.service.FileService;
 import com.osmowsis.osmowsisfinalproject.service.SimulationRiskProfileService;
 import com.osmowsis.osmowsisfinalproject.constant.FXMLView;
 import javafx.stage.FileChooser;
@@ -26,7 +26,7 @@ public class WelcomeController
     // FIELDS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private final StageManager stageManager;
-    private final FileParsingService fileParsingService;
+    private final FileService fileService;
     private final SimulationDataModel simulationDataModel;
     private final SimulationRiskProfileService simulationRiskProfileService;
 
@@ -34,12 +34,12 @@ public class WelcomeController
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Autowired
     public WelcomeController(@Lazy final StageManager stageManager,
-                             final FileParsingService fileParsingService,
+                             final FileService fileService,
                              final SimulationDataModel simulationDataModel,
                              final SimulationRiskProfileService simulationRiskProfileService)
     {
         this.stageManager = stageManager;
-        this.fileParsingService = fileParsingService;
+        this.fileService = fileService;
         this.simulationDataModel = simulationDataModel;
         this.simulationRiskProfileService = simulationRiskProfileService;
     }
@@ -59,7 +59,7 @@ public class WelcomeController
         if(selectedFile != null)
         {
             try {
-                fileParsingService.parseFile(selectedFile);
+                fileService.parseFile(selectedFile);
 
                 simulationRiskProfileService.updateSimulationRiskProfile();
 

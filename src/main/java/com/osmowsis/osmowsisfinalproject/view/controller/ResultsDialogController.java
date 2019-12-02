@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXDialog;
 import com.osmowsis.osmowsisfinalproject.config.StageManager;
 import com.osmowsis.osmowsisfinalproject.constant.FXMLView;
 import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
+import com.osmowsis.osmowsisfinalproject.service.FileService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -28,6 +29,7 @@ public class ResultsDialogController implements Initializable
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private final StageManager stageManager;
     private final SimulationDataModel simulationDataModel;
+    private final FileService fileService;
 
     @FXML
     @Getter
@@ -73,10 +75,12 @@ public class ResultsDialogController implements Initializable
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Lazy
     @Autowired
-    public ResultsDialogController(final StageManager stageManager, final SimulationDataModel simulationDataModel)
+    public ResultsDialogController(final StageManager stageManager, final SimulationDataModel simulationDataModel,
+                                   final FileService fileService)
     {
         this.stageManager = stageManager;
         this.simulationDataModel = simulationDataModel;
+        this.fileService = fileService;
     }
 
     // INIT METHODS
@@ -103,6 +107,8 @@ public class ResultsDialogController implements Initializable
      */
     public void handleRestartBtnClick()
     {
+        fileService.writeResultsFile();
+
         simulationDataModel.resetDataModel();
 
         stageManager.switchScene(FXMLView.WELCOME);
@@ -113,6 +119,8 @@ public class ResultsDialogController implements Initializable
      */
     public void handleExitBtnClick()
     {
+        fileService.writeResultsFile();
+
         simulationDataModel.resetDataModel();
 
         stageManager.closeMainStage();

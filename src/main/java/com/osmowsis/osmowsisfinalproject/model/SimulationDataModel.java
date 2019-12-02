@@ -54,6 +54,10 @@ public class SimulationDataModel implements BaseDataModel
     private SimpleStringProperty consoleText;
 
     @Setter
+    private String resultsFileName;
+    private StringBuilder resultsSb;
+
+    @Setter
     private SimulationRiskProfile simulationRiskProfile;
 
     private ObservableList<Mower> mowers;
@@ -110,6 +114,8 @@ public class SimulationDataModel implements BaseDataModel
         consoleText = new SimpleStringProperty(STARTING_CONSOLE_MSG);
 
         simulationRiskProfile = SimulationRiskProfile.LOW;
+
+        resultsSb = new StringBuilder();
     }
 
     /**
@@ -236,6 +242,22 @@ public class SimulationDataModel implements BaseDataModel
         mowerQueue.remove(mower);
 
         activeMowerCount.set(mowerQueue.size());
+    }
+
+    /**
+     * Updates the results content with a new entry, new entries are added on a new line
+     *
+     * @param content - The content to add
+     */
+    public void updateResultsFileContents(final String content)
+    {
+        if(resultsSb.toString().trim().isEmpty())
+        {
+            resultsSb.append(content);
+        }
+        else{
+            resultsSb.append("\n" + content);
+        }
     }
 
 

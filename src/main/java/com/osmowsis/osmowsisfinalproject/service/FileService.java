@@ -3,10 +3,13 @@ package com.osmowsis.osmowsisfinalproject.service;
 import com.osmowsis.osmowsisfinalproject.constant.Direction;
 import com.osmowsis.osmowsisfinalproject.pojo.Gopher;
 import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +19,14 @@ import java.util.List;
  * Created on 11/27/2019
  */
 
+@Slf4j
 @Service
-public class FileParsingService
+public class FileService
 {
     // FIELDS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private static final String DELIMITER = ",";
+    private static final String RESULTS_FILE_SUFFIX = "_results.txt";
 
     // LAWN PROCESSING
     private static final int X_DIMENSION_LINE_NUMBER = 0;
@@ -45,7 +50,7 @@ public class FileParsingService
     // FIELDS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Autowired
-    public FileParsingService(final SimulationDataModel simulationDataModel)
+    public FileService(final SimulationDataModel simulationDataModel)
     {
         this.simulationDataModel = simulationDataModel;
     }
@@ -70,6 +75,24 @@ public class FileParsingService
         currentIndex = processGopherInfo(lines, currentIndex);
 
         processMaxTurnsInfo(lines, currentIndex);
+
+        String filename = file.getName().trim().substring(0, file.getName().lastIndexOf('.'));
+
+        simulationDataModel.setResultsFileName(filename + RESULTS_FILE_SUFFIX);
+    }
+
+    /**
+     * Writes out the results file
+     */
+    public void writeResultsFile()
+    {
+        try{
+            Files.write(Paths.get("./" + simulationDataModel.getResultsFileName()), simulationDataModel.getResultsSb().toString().getBytes());
+        }
+        catch(IOException e)
+        {
+            log.error("Something went wrong with the file writing");
+        }
     }
 
     // PRIVATE METHODS
