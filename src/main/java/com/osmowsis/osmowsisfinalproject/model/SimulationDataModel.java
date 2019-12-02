@@ -59,10 +59,10 @@ public class SimulationDataModel implements BaseDataModel
     private ObservableList<Mower> mowers;
     private Deque<Mower> mowerQueue;
 
-    private Mower currentMower;
-
     private ObservableList<LawnSquare> lawnSquares;
+
     private ObservableList<Gopher> gophers;
+    private Deque<Gopher> gopherQueue;
 
     // CONSTRUCTORS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,6 +88,7 @@ public class SimulationDataModel implements BaseDataModel
         gophers = FXCollections.observableArrayList();
 
         mowerQueue = new ArrayDeque<>();
+        gopherQueue = new ArrayDeque<>();
 
         lawnXDimension = new SimpleIntegerProperty();
         lawnYDimension = new SimpleIntegerProperty();
@@ -193,6 +194,18 @@ public class SimulationDataModel implements BaseDataModel
         }
     }
 
+    public Gopher getNextGopher()
+    {
+        Gopher gopher = gopherQueue.removeFirst();
+
+        if(gopher != null)
+        {
+            gopherQueue.addLast(gopher);
+        }
+
+        return gopher;
+    }
+
     /**
      * Gets the next mower from the queue and then adds it to the back of the queue
      *
@@ -202,21 +215,27 @@ public class SimulationDataModel implements BaseDataModel
      */
     public Mower getNextMower()
     {
-        while(mowerQueue.size() > 0)
+        Mower nextMower = null;
+
+        if(!mowerQueue.isEmpty())
         {
-            Mower nextMower = mowerQueue.removeFirst();
-
-            if(!nextMower.isDisabled())
-            {
-                mowerQueue.addLast(nextMower);
-
-                currentMower = nextMower;
-
-                return nextMower;
-            }
+            nextMower = mowerQueue.removeFirst();
+            mowerQueue.add(nextMower);
         }
 
-        throw new RuntimeException("[MOWER QUEUE] :: getNextMower - Mower queue is empty");
+        return nextMower;
+    }
+
+    /**
+     * Remove mower from queue
+     *
+     * @param mower - The mower to remove
+     */
+    public void removeMowerFromActiveQueue(final Mower mower)
+    {
+        mowerQueue.remove(mower);
+
+        activeMowerCount.set(mowerQueue.size());
     }
 
 
@@ -304,6 +323,7 @@ public class SimulationDataModel implements BaseDataModel
         gopher.setGopherNumber(gophers.size());
 
         gophers.add(gopher);
+        gopherQueue.addLast(gopher);
 
         LawnSquare lawnSquare = getLawnSquareByCoordinates(gopher.getXCoordinate(), gopher.getYCoordinate());
 
@@ -343,11 +363,6 @@ public class SimulationDataModel implements BaseDataModel
     {
         currentTurn.set(currentTurn.get() + 1);
     }
-
-    /**
-     * Decrements the active mower count by 1
-     */
-    public void decrementActiveMowers() { activeMowerCount.set(activeMowerCount.get() - 1); }
 
     // GETTER ACCESS METHODS FOR SIMPLE PROPERTIES
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

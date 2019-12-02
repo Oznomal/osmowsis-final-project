@@ -9,7 +9,7 @@ import lombok.Data;
  */
 
 @Data
-public class Gopher
+public class Gopher implements MoveableLawnItem
 {
     private int gopherNumber;
     private int xCoordinate;

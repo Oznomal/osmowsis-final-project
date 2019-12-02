@@ -6,6 +6,7 @@ import com.osmowsis.osmowsisfinalproject.constant.CSS;
 import com.osmowsis.osmowsisfinalproject.constant.FXMLView;
 import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
 import com.osmowsis.osmowsisfinalproject.pojo.Gopher;
+import com.osmowsis.osmowsisfinalproject.pojo.MoveableLawnItem;
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
 import com.osmowsis.osmowsisfinalproject.service.SimulationService;
 import com.osmowsis.osmowsisfinalproject.view.cell.SidebarGopherCell;
@@ -204,13 +205,21 @@ public class SidebarController implements Initializable
         simDetailsActiveMowerCountLabel.textProperty().bind(simulationDataModel.getActiveMowerCount().asString());
         simDetailsTotalGrassCutLabel.textProperty().bind(simulationDataModel.getTotalGrassCut().asString());
 
+        // GET THE FIRST MOWER, SET IT IN THE SIMULATION SERVICE AND UPDATE THE UI FOR CURRENT MOWER
+        Mower firstMower = simulationDataModel.getNextMower();
+        simulationService.setNextMove(firstMower);
+        simDetailsCurrentMowerLabel.setText("M" + (firstMower.getMowerNumber() + 1));
+
         // CLEAR THE CONSOLE
         simulationDataModel.updateConsoleText("", true);
 
+        // SET THE TURN TO 1
         simulationDataModel.incrementCurrentTurn();
 
+        // UPDATE THE LAWN UI
         lawnGridController.updateLawnUI();
 
+        // DISPLAY THE NEXT SET OF BUTTONS
         displayButtonGroup(btnGroup2);
     }
 
@@ -238,6 +247,18 @@ public class SidebarController implements Initializable
         resultsDialogController.getResultsDialog().setDialogContainer(appContainerController.getAppContainer());
         resultsDialogController.updateResults();
         resultsDialogController.getResultsDialog().show();
+    }
+
+    public void updateCurrentMoveTitle(MoveableLawnItem nextMover)
+    {
+        if(nextMover instanceof  Mower)
+        {
+            simDetailsCurrentMowerLabel.setText("M" + (((Mower) nextMover).getMowerNumber() + 1));
+        }
+        else if(nextMover instanceof Gopher)
+        {
+            simDetailsCurrentMowerLabel.setText("G" + (((Gopher) nextMover).getGopherNumber() + 1));
+        }
     }
 
     /**

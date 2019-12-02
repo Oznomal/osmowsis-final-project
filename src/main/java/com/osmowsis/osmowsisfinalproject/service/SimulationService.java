@@ -1,12 +1,16 @@
 package com.osmowsis.osmowsisfinalproject.service;
 
 import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
+import com.osmowsis.osmowsisfinalproject.pojo.Gopher;
+import com.osmowsis.osmowsisfinalproject.pojo.MoveableLawnItem;
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
 import com.osmowsis.osmowsisfinalproject.view.controller.AppContainerController;
 import com.osmowsis.osmowsisfinalproject.view.controller.LawnGridController;
 import com.osmowsis.osmowsisfinalproject.view.controller.ResultsDialogController;
 import com.osmowsis.osmowsisfinalproject.view.controller.SidebarController;
 import javafx.application.Platform;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -27,6 +31,10 @@ public class SimulationService {
     private final SidebarController sidebarController;
     private final ResultsDialogController resultsDialogController;
     private final AppContainerController appContainerController;
+
+    @Getter
+    @Setter
+    private MoveableLawnItem nextMove;
 
     // CONSTRUCTOR
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,32 +71,63 @@ public class SimulationService {
      */
     public boolean takeNextMove()
     {
-        log.info("[SIM SERVICE] :: takeNextMove - Taking next move");
+        int lastMowerMovedNumber;
+        int lastGopherMovedNumber;
 
-        final int turnsTaken = simulationDataModel.getCurrentTurn().get();
-        final int gopherPeriod = simulationDataModel.getGopherPeriod().get();
-
-        if(turnsTaken == 0 || mowerService.areAllMowerTurnsTaken())
+        if(nextMove instanceof  Mower)
         {
-            simulationDataModel.incrementCurrentTurn();
+            Mower mower = (Mower) nextMove;
 
-            mowerService.resetTurnInfoForActiveMowers();
-        }
-
-        if (turnsTaken % gopherPeriod == 0)
-        {
-            // TODO: THIS CAN BE REMOVED AFTER DEBUGGING AND DETERMINING THAT EVERYTHING WORKS
-            log.info("[GOPHER PERIOD ALERT] - The gophers are changing their position");
-
-            gopherService.moveGopher();
-        }
-        else {
-            Mower mower = simulationDataModel.getNextMower();
+            lastMowerMovedNumber = mower.getMowerNumber();
 
             mowerService.makeMove(mower);
 
-            simulationRiskProfileService.updateSimulationRiskProfile();
+            log.warn("SIMULATION DATA MODEL SIZE: {}", simulationDataModel.getMowerQueue().size());
+            log.warn("SIMULATION DATA MODEL IS EMPTY: {}", simulationDataModel.getMowerQueue().isEmpty());
+
+            if(!simulationDataModel.getMowerQueue().isEmpty()
+                    && simulationDataModel.getMowerQueue().peekFirst().getMowerNumber() <= lastMowerMovedNumber)
+            {
+                simulationDataModel.incrementCurrentTurn();
+
+                if(simulationDataModel.getCurrentTurn().get() % simulationDataModel.getGopherPeriod().get() == 0)
+                {
+                    log.info("[GOPHER PERIOD ALERT] :: GOPHERS WILL BEGIN MOVING NEXT");
+
+                    nextMove = simulationDataModel.getNextGopher();
+                }
+                else{
+                    nextMove = simulationDataModel.getNextMower();
+                }
+            }
+            else{
+                nextMove = simulationDataModel.getNextMower();
+            }
+
         }
+        else if(nextMove instanceof Gopher)
+        {
+            Gopher gopher = (Gopher) nextMove;
+
+            lastGopherMovedNumber = gopher.getGopherNumber();
+
+            gopherService.moveGopher(gopher);
+
+            if(simulationDataModel.getGopherQueue().peekFirst().getGopherNumber() < lastGopherMovedNumber)
+            {
+                simulationDataModel.incrementCurrentTurn();
+
+                log.info("[MOWER PERIOD ALERT] :: GOPHER PERIOD OVER, MOWERS START MOVING NEXT");
+
+                nextMove = simulationDataModel.getNextMower();
+            }
+            else{
+                nextMove = simulationDataModel.getNextGopher();
+            }
+        }
+
+        simulationRiskProfileService.updateSimulationRiskProfile();
+
 
         Platform.runLater(() -> lawnGridController.updateLawnUI());
 
@@ -101,6 +140,9 @@ public class SimulationService {
             resultsDialogController.getResultsDialog().show();
 
             return true;
+        }
+        else{
+            Platform.runLater(() -> sidebarController.updateCurrentMoveTitle(nextMove));
         }
 
         return false;

@@ -23,9 +23,6 @@ public class GopherService
     private final LawnService lawnService;
     private final MowerService mowerService;
 
-    private int currentGopherIndex = 0;
-
-
     // CONSTRUCTORS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Autowired
@@ -43,22 +40,9 @@ public class GopherService
 
     // PUBLIC METHODS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void moveGopher(){
-        Gopher gopher = simulationDataModel.getGophers().get(currentGopherIndex);
+    public void moveGopher(final Gopher gopher){
         Coordinate nextCoord = determineMove(gopher);
         updateSimStateGopher(gopher, nextCoord);
-        currentGopherIndex++;
-        currentGopherIndex = currentGopherIndex%simulationDataModel.getGophers().size();
-        if (currentGopherIndex == 0){
-            simulationDataModel.incrementCurrentTurn();
-        }
-    }
-
-    public void moveAllGophers(){
-        this.currentGopherIndex = 0;
-        for(Gopher gopher: simulationDataModel.getGophers()){
-            moveGopher();
-        }
     }
 
     public void updateSimStateGopher(Gopher gopher, Coordinate nextCoord) {

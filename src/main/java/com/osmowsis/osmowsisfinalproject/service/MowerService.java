@@ -94,8 +94,6 @@ public class MowerService
         else{
             disableMower(nextMove);
         }
-
-        mower.setTurnTaken(true);
     }
 
     /**
@@ -110,39 +108,7 @@ public class MowerService
         mower.setCurrentXCoordinate(Integer.MIN_VALUE);
         mower.setCurrentYCoordinate(Integer.MIN_VALUE);
 
-        decrementActiveMowers();
-    }
-
-    /**
-     * Checks to see if all mowers have made a move for this round
-     *
-     * @return - True if true, false other wise
-     */
-    public boolean areAllMowerTurnsTaken()
-    {
-        for(Mower mower : simulationDataModel.getMowers())
-        {
-            if(!mower.isDisabled() && !mower.isTurnTaken())
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Resets the turn taken flag for all active mowers, this should be called at the beginning of each new turn
-     */
-    public void resetTurnInfoForActiveMowers()
-    {
-        for(Mower mower : simulationDataModel.getMowers())
-        {
-            if(!mower.isDisabled())
-            {
-                mower.setTurnTaken(false);
-            }
-        }
+        simulationDataModel.removeMowerFromActiveQueue(mower);
     }
 
     // PRIVATE METHODS
@@ -319,7 +285,7 @@ public class MowerService
 
         if(lawnService.doesContentContainObstacle(newContent))
         {
-            decrementActiveMowers();
+            simulationDataModel.removeMowerFromActiveQueue(move.getMower());
 
             // TODO: CHECK TO SEE IF THE STATEMENT BELOW IS TRUE
             // WHEN THE MOWER GOES OVER GOPHER, IT GETS CHEWED BUT STILL CUTS THE GRASS FIRST
@@ -442,6 +408,11 @@ public class MowerService
         {
             mower.setDisabled(true);
 
+            if(simulationDataModel.getMowerQueue().contains(move.getMower()))
+            {
+                simulationDataModel.removeMowerFromActiveQueue(move.getMower());
+            }
+
             // IF THE MOVE WAS INVALID THEN THAT MEANS A COLLISION OF COME SORTS OCCURRED, WE STILL WANT TO SHOW THE
             // ENERGY THAT WAS CONSUMED MAKING THE MOVE, BUT WE DON'T SHOW THIS MESSAGE PLUS THE COLLISION MESSAGE
             if(validMove)
@@ -466,14 +437,6 @@ public class MowerService
                 move.getCurrentXCoordinate(), move.getCurrentYCoordinate());
 
         return currentContent == LawnSquareContent.EMPTY_MOWER_CHARGER;
-    }
-
-    /**
-     * Decrements the active mowers by 1
-     */
-    private void decrementActiveMowers()
-    {
-        simulationDataModel.decrementActiveMowers();
     }
 
     /**

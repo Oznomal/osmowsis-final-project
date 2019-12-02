@@ -13,7 +13,7 @@ import java.util.List;
  */
 
 @Data
-public class Mower
+public class Mower implements MoveableLawnItem
 {
     private int mowerNumber; // INDEX STARTS AT 0, UI WILL ADD 1 ON THIS NUMBER TO GET THE DISPLAY NUMBER
     private Direction currentDirection;
@@ -23,8 +23,5 @@ public class Mower
     private int turnsSinceLastScan;
     private boolean strategic;
     private boolean disabled;
-    private boolean turnTaken;
     private List<LawnSquareContent> surroundingSquares;
-
-
 }
