@@ -306,7 +306,7 @@ public class MowerService
             else if(newContent == LawnSquareContent.EMPTY_MOWER)
             {
                 Mower collisionMower =
-                        simulationDataModel.getMowerByCoordinates(newSquare.getXCoordinate(), newSquare.getXCoordinate());
+                        simulationDataModel.getMowerByCoordinates(newSquare.getXCoordinate(), newSquare.getYCoordinate());
 
                 removeMowerInNewSquare(collisionMower);
 
@@ -320,7 +320,7 @@ public class MowerService
             else if(newContent == LawnSquareContent.EMPTY_MOWER_CHARGER)
             {
                 Mower collisionMower =
-                        simulationDataModel.getMowerByCoordinates(newSquare.getXCoordinate(), newSquare.getXCoordinate());
+                        simulationDataModel.getMowerByCoordinates(newSquare.getXCoordinate(), newSquare.getYCoordinate());
 
                 removeMowerInNewSquare(collisionMower);
 

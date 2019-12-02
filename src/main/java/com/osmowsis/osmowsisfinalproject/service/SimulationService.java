@@ -82,9 +82,6 @@ public class SimulationService {
 
             mowerService.makeMove(mower);
 
-            log.warn("SIMULATION DATA MODEL SIZE: {}", simulationDataModel.getMowerQueue().size());
-            log.warn("SIMULATION DATA MODEL IS EMPTY: {}", simulationDataModel.getMowerQueue().isEmpty());
-
             if(!simulationDataModel.getMowerQueue().isEmpty()
                     && simulationDataModel.getMowerQueue().peekFirst().getMowerNumber() <= lastMowerMovedNumber)
             {

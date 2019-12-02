@@ -94,7 +94,7 @@ public class LawnService
             return LawnSquareContent.EMPTY_CHARGER;
         }
 
-        throw new RuntimeException("[MOWER ISSUE] :: getNewLawnContentForDepartingMower - Invalid current square");
+        throw new RuntimeException("[MOWER ISSUE] :: getNewLawnContentForDepartingMower - Invalid current square" + " || Content=" + current.name());
     }
 
     /**

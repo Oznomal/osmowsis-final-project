@@ -125,12 +125,12 @@
                             <children>
                                 <HBox prefWidth="180.0">
                                     <children>
-                                        <Label styleClass="main-text" text="Current Mower:">
+                                        <Label styleClass="main-text" text="Next Move:">
                                             <HBox.margin>
                                                 <Insets right="3.0" />
                                             </HBox.margin>
                                         </Label>
-                                        <Label fx:id="simDetailsCurrentMowerLabel" styleClass="main-text" text="N/A">
+                                        <Label fx:id="simDetailsNextMoveLabel" styleClass="main-text" text="N/A">
                                             <font>
                                                 <Font name="System Bold" size="12.0" />
                                             </font>
