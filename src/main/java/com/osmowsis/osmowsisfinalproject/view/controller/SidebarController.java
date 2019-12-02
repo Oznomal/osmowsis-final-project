@@ -6,6 +6,7 @@ import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
 import com.osmowsis.osmowsisfinalproject.pojo.Gopher;
 import com.osmowsis.osmowsisfinalproject.pojo.MoveableLawnItem;
 import com.osmowsis.osmowsisfinalproject.pojo.Mower;
+import com.osmowsis.osmowsisfinalproject.service.FileService;
 import com.osmowsis.osmowsisfinalproject.service.SimulationService;
 import com.osmowsis.osmowsisfinalproject.view.cell.SidebarGopherCell;
 import com.osmowsis.osmowsisfinalproject.view.cell.SidebarMowerCell;
@@ -46,6 +47,7 @@ public class SidebarController implements Initializable
     private final SimulationService simulationService;
     private final ResultsDialogController resultsDialogController;
     private final AppContainerController appContainerController;
+    private final FileService fileService;
 
     @FXML
     private FontAwesomeIconView simulationDetailsCollapsibleIcon;
@@ -108,13 +110,15 @@ public class SidebarController implements Initializable
                              final LawnGridController lawnGridController,
                              final SimulationService simulationService,
                              final ResultsDialogController resultsDialogController,
-                             final AppContainerController appContainerController)
+                             final AppContainerController appContainerController,
+                             final FileService fileService)
     {
         this.simulationDataModel = simulationDataModel;
         this.lawnGridController = lawnGridController;
         this.simulationService = simulationService;
         this.resultsDialogController = resultsDialogController;
         this.appContainerController = appContainerController;
+        this.fileService = fileService;
 
         mowerControllerMap = new HashMap<>();
         gopherControllerMap = new HashMap<>();
@@ -241,6 +245,8 @@ public class SidebarController implements Initializable
      */
     public void handleStopBtnClick()
     {
+        fileService.writeResultsFile();
+
         resultsDialogController.getResultsDialog().setDialogContainer(appContainerController.getAppContainer());
         resultsDialogController.updateResults();
         resultsDialogController.getResultsDialog().show();

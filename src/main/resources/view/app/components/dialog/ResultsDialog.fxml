@@ -67,285 +67,324 @@
         <!-- RESULTS BODY  -->
         <!-- ______________-->
         <body>
-            <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0">
+            <VBox maxWidth="500.0">
                 <children>
-                    <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
+                    <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+                          prefHeight="300.0" prefWidth="500.0">
                         <children>
-
-                            <!-- _______-->
-                            <!-- ROW 1  -->
-                            <!-- _______-->
-                            <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
+                            <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
                                 <children>
-                                    <Label text="Total Grass Cut:" styleClass="main-text">
-                                        <font>
-                                            <Font name="Roboto Light" size="18.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets right="6.0" />
-                                        </padding>
-                                    </Label>
-                                    <Label fx:id="totalGrassCutLabel" layoutX="10.0" layoutY="10.0" text="150" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <HBox.margin>
-                                            <Insets right="5.0" />
-                                        </HBox.margin>
-                                    </Label>
-                                    <Label layoutX="143.0" layoutY="19.0" text="of" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <HBox.margin>
-                                            <Insets right="5.0" />
-                                        </HBox.margin>
-                                    </Label>
-                                    <Label fx:id="startingGrassLabel" layoutX="323.0" layoutY="19.0" text="150" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <HBox.margin>
-                                            <Insets right="5.0" />
-                                        </HBox.margin>
-                                    </Label>
-                                    <Label layoutX="503.0" layoutY="19.0" text="squares" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                    </Label>
-                                </children>
-                            </HBox>
 
-                            <!-- _______-->
-                            <!-- ROW 2  -->
-                            <!-- _______-->
-                            <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
-                                <children>
-                                    <Label text="Completion Percentage:" styleClass="main-text">
-                                        <font>
-                                            <Font name="Roboto Light" size="18.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets right="6.0" />
-                                        </padding>
-                                    </Label>
-                                    <Label fx:id="completionPercentageLabel" layoutX="10.0" layoutY="10.0" text="100%" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                    </Label>
-                                </children>
-                            </HBox>
+                                    <!-- _______-->
+                                    <!-- ROW 1  -->
+                                    <!-- _______-->
+                                    <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
+                                        <children>
+                                            <Label styleClass="main-text" text="Total Grass Cut:">
+                                                <font>
+                                                    <Font name="Roboto Light" size="18.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets right="6.0"/>
+                                                </padding>
+                                            </Label>
+                                            <Label fx:id="totalGrassCutLabel" layoutX="10.0" layoutY="10.0" styleClass="alt-text"
+                                                   text="150">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <HBox.margin>
+                                                    <Insets right="5.0"/>
+                                                </HBox.margin>
+                                            </Label>
+                                            <Label layoutX="143.0" layoutY="19.0" styleClass="alt-text" text="of">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <HBox.margin>
+                                                    <Insets right="5.0"/>
+                                                </HBox.margin>
+                                            </Label>
+                                            <Label fx:id="startingGrassLabel" layoutX="323.0" layoutY="19.0" styleClass="alt-text"
+                                                   text="150">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <HBox.margin>
+                                                    <Insets right="5.0"/>
+                                                </HBox.margin>
+                                            </Label>
+                                            <Label layoutX="503.0" layoutY="19.0" styleClass="alt-text" text="squares">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                            </Label>
+                                        </children>
+                                    </HBox>
 
-                            <!-- _______-->
-                            <!-- ROW 3  -->
-                            <!-- _______-->
-                            <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
-                                <children>
-                                    <Label text="Lawn Dimensions:" styleClass="main-text">
-                                        <font>
-                                            <Font name="Roboto Light" size="18.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets right="6.0" />
-                                        </padding>
-                                    </Label>
-                                    <Label layoutX="10.0" layoutY="10.0" text="15" styleClass="alt-text" fx:id="xDimensionLabel">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets top="2.0" />
-                                        </padding>
-                                        <HBox.margin>
-                                            <Insets right="5.0" />
-                                        </HBox.margin>
-                                    </Label>
-                                    <Label layoutX="162.0" layoutY="17.0" text="x" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets top="2.0" />
-                                        </padding>
-                                        <HBox.margin>
-                                            <Insets right="5.0" />
-                                        </HBox.margin>
-                                    </Label>
-                                    <Label fx:id="yDimensionLabel" layoutX="231.0" layoutY="17.0" text="10" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets top="2.0" />
-                                        </padding>
-                                    </Label>
-                                </children>
-                            </HBox>
+                                    <!-- _______-->
+                                    <!-- ROW 2  -->
+                                    <!-- _______-->
+                                    <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
+                                        <children>
+                                            <Label styleClass="main-text" text="Completion Percentage:">
+                                                <font>
+                                                    <Font name="Roboto Light" size="18.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets right="6.0"/>
+                                                </padding>
+                                            </Label>
+                                            <Label fx:id="completionPercentageLabel" layoutX="10.0" layoutY="10.0"
+                                                   styleClass="alt-text" text="100%">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                            </Label>
+                                        </children>
+                                    </HBox>
 
-                            <!-- _______-->
-                            <!-- ROW 4  -->
-                            <!-- _______-->
-                            <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
-                                <children>
-                                    <Label text="Lawn Area:" styleClass="main-text">
-                                        <font>
-                                            <Font name="Roboto Light" size="18.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets right="6.0" />
-                                        </padding>
-                                    </Label>
-                                    <Label fx:id="lawnAreaLabel" layoutX="10.0" layoutY="10.0" text="150" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets top="2.0" />
-                                        </padding>
-                                    </Label>
-                                </children>
-                            </HBox>
+                                    <!-- _______-->
+                                    <!-- ROW 3  -->
+                                    <!-- _______-->
+                                    <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
+                                        <children>
+                                            <Label styleClass="main-text" text="Lawn Dimensions:">
+                                                <font>
+                                                    <Font name="Roboto Light" size="18.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets right="6.0"/>
+                                                </padding>
+                                            </Label>
+                                            <Label layoutX="10.0" layoutY="10.0" styleClass="alt-text" text="15"
+                                                   fx:id="xDimensionLabel">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets top="2.0"/>
+                                                </padding>
+                                                <HBox.margin>
+                                                    <Insets right="5.0"/>
+                                                </HBox.margin>
+                                            </Label>
+                                            <Label layoutX="162.0" layoutY="17.0" styleClass="alt-text" text="x">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets top="2.0"/>
+                                                </padding>
+                                                <HBox.margin>
+                                                    <Insets right="5.0"/>
+                                                </HBox.margin>
+                                            </Label>
+                                            <Label fx:id="yDimensionLabel" layoutX="231.0" layoutY="17.0" styleClass="alt-text"
+                                                   text="10">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets top="2.0"/>
+                                                </padding>
+                                            </Label>
+                                        </children>
+                                    </HBox>
 
-                            <!-- _______-->
-                            <!-- ROW 5  -->
-                            <!-- _______-->
-                            <HBox alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="150.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
-                                <children>
-                                    <Label text="Gopher Period:" styleClass="main-text">
-                                        <font>
-                                            <Font name="Roboto Light" size="18.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets right="6.0" />
-                                        </padding>
-                                    </Label>
-                                    <Label fx:id="gopherPeriodLabel" layoutX="10.0" layoutY="10.0" text="4" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets top="2.0" />
-                                        </padding>
-                                    </Label>
-                                </children>
-                            </HBox>
+                                    <!-- _______-->
+                                    <!-- ROW 4  -->
+                                    <!-- _______-->
+                                    <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
+                                        <children>
+                                            <Label styleClass="main-text" text="Lawn Area:">
+                                                <font>
+                                                    <Font name="Roboto Light" size="18.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets right="6.0"/>
+                                                </padding>
+                                            </Label>
+                                            <Label fx:id="lawnAreaLabel" layoutX="10.0" layoutY="10.0" styleClass="alt-text"
+                                                   text="150">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets top="2.0"/>
+                                                </padding>
+                                            </Label>
+                                        </children>
+                                    </HBox>
 
-                            <!-- _______-->
-                            <!-- ROW 6  -->
-                            <!-- _______-->
-                            <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
-                                <children>
-                                    <Label text="Number of Gophers:" styleClass="main-text">
-                                        <font>
-                                            <Font name="Roboto Light" size="18.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets right="6.0" />
-                                        </padding>
-                                    </Label>
-                                    <Label fx:id="gopherCountLabel" layoutX="10.0" layoutY="10.0" text="4" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets top="2.0" />
-                                        </padding>
-                                    </Label>
-                                </children>
-                            </HBox>
+                                    <!-- _______-->
+                                    <!-- ROW 5  -->
+                                    <!-- _______-->
+                                    <HBox alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="150.0" maxHeight="-Infinity"
+                                          minHeight="-Infinity" prefHeight="35.0">
+                                        <children>
+                                            <Label styleClass="main-text" text="Gopher Period:">
+                                                <font>
+                                                    <Font name="Roboto Light" size="18.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets right="6.0"/>
+                                                </padding>
+                                            </Label>
+                                            <Label fx:id="gopherPeriodLabel" layoutX="10.0" layoutY="10.0" styleClass="alt-text"
+                                                   text="4">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets top="2.0"/>
+                                                </padding>
+                                            </Label>
+                                        </children>
+                                    </HBox>
 
-                            <!-- _______-->
-                            <!-- ROW 7  -->
-                            <!-- _______-->
-                            <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
-                                <children>
-                                    <Label text="Turns Taken:" styleClass="main-text">
-                                        <font>
-                                            <Font name="Roboto Light" size="18.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets right="6.0" />
-                                        </padding>
-                                    </Label>
-                                    <Label fx:id="totalTurnsTakenLabel" layoutX="10.0" layoutY="10.0" text="300" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets right="5.0" top="2.0" />
-                                        </padding>
-                                        <HBox.margin>
-                                            <Insets />
-                                        </HBox.margin>
-                                    </Label>
-                                    <Label layoutX="119.0" layoutY="17.0" text="of" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets right="5.0" top="2.0" />
-                                        </padding>
-                                        <HBox.margin>
-                                            <Insets />
-                                        </HBox.margin>
-                                    </Label>
-                                    <Label fx:id="maxTurnsLabel" layoutX="119.0" layoutY="17.0" text="300" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets top="2.0" />
-                                        </padding>
-                                    </Label>
-                                </children>
-                            </HBox>
+                                    <!-- _______-->
+                                    <!-- ROW 6  -->
+                                    <!-- _______-->
+                                    <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
+                                        <children>
+                                            <Label styleClass="main-text" text="Number of Gophers:">
+                                                <font>
+                                                    <Font name="Roboto Light" size="18.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets right="6.0"/>
+                                                </padding>
+                                            </Label>
+                                            <Label fx:id="gopherCountLabel" layoutX="10.0" layoutY="10.0" styleClass="alt-text"
+                                                   text="4">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets top="2.0"/>
+                                                </padding>
+                                            </Label>
+                                        </children>
+                                    </HBox>
 
-                            <!-- _______-->
-                            <!-- ROW 8  -->
-                            <!-- _______-->
-                            <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
-                                <children>
-                                    <Label text="Remaining Mowers:" styleClass="main-text">
-                                        <font>
-                                            <Font name="Roboto Light" size="18.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets right="6.0" />
-                                        </padding>
-                                    </Label>
-                                    <Label fx:id="activeMowersLabel" layoutX="10.0" layoutY="10.0" text="8" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets right="5.0" />
-                                        </padding>
-                                    </Label>
-                                    <Label layoutX="173.0" layoutY="19.0" text="of" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                        <padding>
-                                            <Insets right="5.0" />
-                                        </padding>
-                                    </Label>
-                                    <Label fx:id="totalMowersLabel" layoutX="190.0" layoutY="19.0" text="8" styleClass="alt-text">
-                                        <font>
-                                            <Font name="Ebrima Bold" size="20.0" />
-                                        </font>
-                                    </Label>
+                                    <!-- _______-->
+                                    <!-- ROW 7  -->
+                                    <!-- _______-->
+                                    <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
+                                        <children>
+                                            <Label styleClass="main-text" text="Turns Taken:">
+                                                <font>
+                                                    <Font name="Roboto Light" size="18.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets right="6.0"/>
+                                                </padding>
+                                            </Label>
+                                            <Label fx:id="totalTurnsTakenLabel" layoutX="10.0" layoutY="10.0" styleClass="alt-text"
+                                                   text="300">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets right="5.0" top="2.0"/>
+                                                </padding>
+                                                <HBox.margin>
+                                                    <Insets/>
+                                                </HBox.margin>
+                                            </Label>
+                                            <Label layoutX="119.0" layoutY="17.0" styleClass="alt-text" text="of">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets right="5.0" top="2.0"/>
+                                                </padding>
+                                                <HBox.margin>
+                                                    <Insets/>
+                                                </HBox.margin>
+                                            </Label>
+                                            <Label fx:id="maxTurnsLabel" layoutX="119.0" layoutY="17.0" styleClass="alt-text"
+                                                   text="300">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets top="2.0"/>
+                                                </padding>
+                                            </Label>
+                                        </children>
+                                    </HBox>
+
+                                    <!-- _______-->
+                                    <!-- ROW 8  -->
+                                    <!-- _______-->
+                                    <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0">
+                                        <children>
+                                            <Label styleClass="main-text" text="Remaining Mowers:">
+                                                <font>
+                                                    <Font name="Roboto Light" size="18.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets right="6.0"/>
+                                                </padding>
+                                            </Label>
+                                            <Label fx:id="activeMowersLabel" layoutX="10.0" layoutY="10.0" styleClass="alt-text"
+                                                   text="8">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets right="5.0"/>
+                                                </padding>
+                                            </Label>
+                                            <Label layoutX="173.0" layoutY="19.0" styleClass="alt-text" text="of">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                                <padding>
+                                                    <Insets right="5.0"/>
+                                                </padding>
+                                            </Label>
+                                            <Label fx:id="totalMowersLabel" layoutX="190.0" layoutY="19.0" styleClass="alt-text"
+                                                   text="8">
+                                                <font>
+                                                    <Font name="Ebrima Bold" size="20.0"/>
+                                                </font>
+                                            </Label>
+                                        </children>
+                                    </HBox>
                                 </children>
-                            </HBox>
+                            </VBox>
                         </children>
+                    </HBox>
+
+                    <!-- ____________________-->
+                    <!-- RESULTS LOG INFO 8  -->
+                    <!-- ____________________-->
+                    <VBox alignment="CENTER">
+                        <Label text="Results Log Location:" styleClass="main-text">
+                            <font>
+                                <Font name="Roboto Light" size="12.0"/>
+                            </font>
+                        </Label>
+
+                        <Label fx:id="resultsFilePath" wrapText="true" styleClass="main-text">
+                            <font>
+                                <Font name="Ebrima Bold" size="10.0"/>
+                            </font>
+                        </Label>
+
+                        <VBox.margin>
+                            <Insets top="20.0" left="10.0" right="10.0"/>
+                        </VBox.margin>
                     </VBox>
                 </children>
-            </HBox>
+            </VBox>
         </body>
 
         <actions>
-            <HBox minWidth="548.0" minHeight="80.0" alignment="TOP_CENTER">
+            <HBox minWidth="548.0" minHeight="60.0" alignment="TOP_CENTER">
 
                 <!-- ________________-->
                 <!-- RESTART BUTTON  -->
@@ -370,7 +409,7 @@
                         <Tooltip text="New Simulation"/>
                     </tooltip>
                     <HBox.margin>
-                        <Insets right="12.5"/>
+                        <Insets right="12.5" bottom="15.0"/>
                     </HBox.margin>
                     <font>
                         <Font size="14.0"/>
@@ -400,7 +439,7 @@
                         <Tooltip text="Exit Simulation"/>
                     </tooltip>
                     <HBox.margin>
-                        <Insets left="12.5"/>
+                        <Insets left="12.5" bottom="15.0"/>
                     </HBox.margin>
                     <font>
                         <Font size="14.0"/>

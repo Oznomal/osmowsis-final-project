@@ -88,6 +88,10 @@ public class FileService
     {
         try{
             Files.write(Paths.get("./" + simulationDataModel.getResultsFileName()), simulationDataModel.getResultsSb().toString().getBytes());
+
+            File resultsFile = new File(simulationDataModel.getResultsFileName());
+
+            simulationDataModel.updateResultsFilePath(resultsFile.getAbsolutePath());
         }
         catch(IOException e)
         {

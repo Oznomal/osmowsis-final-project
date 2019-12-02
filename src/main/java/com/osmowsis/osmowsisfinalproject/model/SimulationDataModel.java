@@ -55,6 +55,7 @@ public class SimulationDataModel implements BaseDataModel
 
     @Setter
     private String resultsFileName;
+    private SimpleStringProperty resultsFileLocation;
     private StringBuilder resultsSb;
 
     @Setter
@@ -116,6 +117,7 @@ public class SimulationDataModel implements BaseDataModel
         simulationRiskProfile = SimulationRiskProfile.LOW;
 
         resultsSb = new StringBuilder();
+        resultsFileLocation = new SimpleStringProperty();
     }
 
     /**
@@ -258,6 +260,16 @@ public class SimulationDataModel implements BaseDataModel
         else{
             resultsSb.append("\n" + content);
         }
+    }
+
+    /**
+     * Updates the absolute path location of the results file
+     *
+     * @param path - The file path
+     */
+    public void updateResultsFilePath(final String path)
+    {
+        resultsFileLocation.setValue(path.trim());
     }
 
 

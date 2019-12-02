@@ -71,6 +71,9 @@ public class ResultsDialogController implements Initializable
     @FXML
     private Label totalMowersLabel;
 
+    @FXML
+    private Label resultsFilePath;
+
     // CONSTRUCTORS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Lazy
@@ -98,6 +101,7 @@ public class ResultsDialogController implements Initializable
         totalTurnsTakenLabel.textProperty().bind(simulationDataModel.getCurrentTurn().asString());
         maxTurnsLabel.textProperty().bind(simulationDataModel.getMaxTurns().asString());
         activeMowersLabel.textProperty().bind(simulationDataModel.getActiveMowerCount().asString());
+        resultsFilePath.textProperty().bind(simulationDataModel.getResultsFileLocation());
     }
 
     // PUBLIC METHODS
