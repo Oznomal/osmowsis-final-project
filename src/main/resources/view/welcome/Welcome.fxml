@@ -13,10 +13,10 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="500.0" prefWidth="500.0" styleClass="welcome-container" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.osmowsis.osmowsisfinalproject.view.controller.WelcomeController">
+<AnchorPane prefHeight="300.0" prefWidth="500.0" styleClass="welcome-container" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.osmowsis.osmowsisfinalproject.view.controller.WelcomeController">
 
     <children>
-        <VBox layoutY="-6.0" prefHeight="500.0" prefWidth="500.0" styleClass="welcome-container" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox prefHeight="300.0" prefWidth="500.0" styleClass="welcome-container" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
 
                 <!-- _____________________-->
@@ -60,14 +60,14 @@
                 </Separator>
 
                 <!-- REGION HELPS VERTICALLY CENTER THE CONTENT IN THE VIEW -->
-                <Region prefHeight="50.0" prefWidth="500.0" />
+                <Region prefHeight="60.0" prefWidth="500.0" />
 
                 <!-- _____________________________________-->
                 <!-- IMPORT / INPUT / GENERATE DATA AREA  -->
                 <!-- _____________________________________-->
                 <HBox alignment="BOTTOM_CENTER">
                     <children>
-                        <JFXButton alignment="CENTER_LEFT" focusTraversable="false" graphicTextGap="50.0" prefHeight="70.0" prefWidth="300.0" styleClass="main-btn" text="Import File" wrapText="true" onMouseClicked="#handleImportFileBtnClick">
+                        <JFXButton alignment="CENTER_LEFT" focusTraversable="false" graphicTextGap="50.0" onMouseClicked="#handleImportFileBtnClick" prefHeight="70.0" prefWidth="300.0" styleClass="main-btn" text="Import File" wrapText="true">
                             <cursor>
                                 <Cursor fx:constant="HAND" />
                             </cursor>
@@ -75,59 +75,73 @@
                                 <Font name="Roboto Light" size="22.0" />
                             </font>
                             <HBox.margin>
-                                <Insets right="5.0" />
+                                <Insets />
                             </HBox.margin>
                      <graphic>
                         <FontAwesomeIconView fill="#fefdaf" glyphName="DOWNLOAD" size="3.0em" />
                      </graphic>
                         </JFXButton>
                     </children>
-                    <padding>
-                        <Insets bottom="45.0" />
-                    </padding>
                 </HBox>
-                <HBox alignment="BOTTOM_CENTER">
-                   <children>
-                      <JFXButton disable="true" alignment="CENTER_LEFT" focusTraversable="false" graphicTextGap="50.0" prefHeight="70.0" prefWidth="300.0" styleClass="main-btn" text="Input Data" wrapText="true" onMouseClicked="#handleInputDataButtonClick">
-                         <cursor>
-                            <Cursor fx:constant="HAND" />
-                         </cursor>
-                         <font>
-                            <Font name="Roboto Light" size="22.0" />
-                         </font>
-                         <HBox.margin>
-                            <Insets right="5.0" />
-                         </HBox.margin>
-                         <graphic>
-                            <FontAwesomeIconView fill="#fefdaf" glyphName="KEYBOARD_ALT" size="3.0em" />
-                         </graphic>
-                      </JFXButton>
-                   </children>
-                   <padding>
-                      <Insets bottom="45.0" />
-                   </padding>
+
+                <!-- ____________-->
+                <!-- ERROR INFO  -->
+                <!-- ____________-->
+                <HBox alignment="CENTER" layoutX="10.0" layoutY="154.0" prefHeight="25.0">
+                    <children>
+                        <Label fx:id="errorLabel" text="An error occured while importing your file. Please try again."
+                               textFill="#d80f0f" visible="false">
+                            <font>
+                                <Font size="13.0"/>
+                            </font>
+                        </Label>
+                    </children>
+                    <VBox.margin>
+                        <Insets top="20.0"/>
+                    </VBox.margin>
                 </HBox>
-                <HBox alignment="BOTTOM_CENTER">
-                   <children>
-                      <JFXButton disable="true" alignment="CENTER_LEFT" focusTraversable="false" graphicTextGap="40.0" prefHeight="70.0" prefWidth="300.0" styleClass="main-btn" text="Generate Data" wrapText="true" onMouseClicked="#handleGenerateDataButtonClick">
-                         <cursor>
-                            <Cursor fx:constant="HAND" />
-                         </cursor>
-                         <font>
-                            <Font name="Roboto Light" size="22.0" />
-                         </font>
-                         <HBox.margin>
-                            <Insets right="5.0" />
-                         </HBox.margin>
-                         <graphic>
-                            <FontAwesomeIconView fill="#fefdaf" glyphName="LIGHTBULB_ALT" size="3.0em" textAlignment="CENTER" wrappingWidth="35.0" />
-                         </graphic>
-                      </JFXButton>
-                   </children>
-                   <padding>
-                      <Insets bottom="45.0" />
-                   </padding>
-                </HBox>
+<!--                <HBox alignment="BOTTOM_CENTER">-->
+<!--                   <children>-->
+<!--                      <JFXButton disable="true" alignment="CENTER_LEFT" focusTraversable="false" graphicTextGap="50.0" prefHeight="70.0" prefWidth="300.0" styleClass="main-btn" text="Input Data" wrapText="true" onMouseClicked="#handleInputDataButtonClick">-->
+<!--                         <cursor>-->
+<!--                            <Cursor fx:constant="HAND" />-->
+<!--                         </cursor>-->
+<!--                         <font>-->
+<!--                            <Font name="Roboto Light" size="22.0" />-->
+<!--                         </font>-->
+<!--                         <HBox.margin>-->
+<!--                            <Insets right="5.0" />-->
+<!--                         </HBox.margin>-->
+<!--                         <graphic>-->
+<!--                            <FontAwesomeIconView fill="#fefdaf" glyphName="KEYBOARD_ALT" size="3.0em" />-->
+<!--                         </graphic>-->
+<!--                      </JFXButton>-->
+<!--                   </children>-->
+<!--                   <padding>-->
+<!--                      <Insets bottom="45.0" />-->
+<!--                   </padding>-->
+<!--                </HBox>-->
+<!--                <HBox alignment="BOTTOM_CENTER">-->
+<!--                   <children>-->
+<!--                      <JFXButton disable="true" alignment="CENTER_LEFT" focusTraversable="false" graphicTextGap="40.0" prefHeight="70.0" prefWidth="300.0" styleClass="main-btn" text="Generate Data" wrapText="true" onMouseClicked="#handleGenerateDataButtonClick">-->
+<!--                         <cursor>-->
+<!--                            <Cursor fx:constant="HAND" />-->
+<!--                         </cursor>-->
+<!--                         <font>-->
+<!--                            <Font name="Roboto Light" size="22.0" />-->
+<!--                         </font>-->
+<!--                         <HBox.margin>-->
+<!--                            <Insets right="5.0" />-->
+<!--                         </HBox.margin>-->
+<!--                         <graphic>-->
+<!--                            <FontAwesomeIconView fill="#fefdaf" glyphName="LIGHTBULB_ALT" size="3.0em" textAlignment="CENTER" wrappingWidth="35.0" />-->
+<!--                         </graphic>-->
+<!--                      </JFXButton>-->
+<!--                   </children>-->
+<!--                   <padding>-->
+<!--                      <Insets bottom="45.0" />-->
+<!--                   </padding>-->
+<!--                </HBox>-->
             </children>
         </VBox>
     </children>

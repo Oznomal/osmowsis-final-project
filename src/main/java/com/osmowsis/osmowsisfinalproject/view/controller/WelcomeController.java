@@ -5,6 +5,8 @@ import com.osmowsis.osmowsisfinalproject.model.SimulationDataModel;
 import com.osmowsis.osmowsisfinalproject.service.FileService;
 import com.osmowsis.osmowsisfinalproject.service.SimulationRiskProfileService;
 import com.osmowsis.osmowsisfinalproject.constant.FXMLView;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class WelcomeController
     private final SimulationDataModel simulationDataModel;
     private final SimulationRiskProfileService simulationRiskProfileService;
 
+    @FXML
+    private Label errorLabel;
+
     // CONSTRUCTORS
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Autowired
@@ -51,6 +56,8 @@ public class WelcomeController
      */
     public void handleImportFileBtnClick()
     {
+        errorLabel.setVisible(false);
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
 
@@ -72,7 +79,7 @@ public class WelcomeController
                 // CLEAR OUT THE DATA MODEL IN CASE SOMETHING WAS SAVED
                 simulationDataModel.resetDataModel();
 
-                // TODO: DISPLAY THE ERROR MESSAGE ON THE UI
+                errorLabel.setVisible(true);
             }
         }
     }
